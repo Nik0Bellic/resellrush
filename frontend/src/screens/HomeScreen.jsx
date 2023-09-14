@@ -1,7 +1,19 @@
-import products from '../products';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 import Product from '../components/Product';
 
 const HomeScreen = () => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const { data } = await axios.get('/api/products');
+      setProducts(data);
+    };
+
+    fetchProducts();
+  }, []);
+
   return (
     <div className='container mx-auto px-4 lg:px-12 mt-24'>
       <div className='relative flex justify-between w-full border-b-2 border-black pb-2 text-xl lg:text-2xl font-medium'>

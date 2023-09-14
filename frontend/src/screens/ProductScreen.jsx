@@ -1,20 +1,23 @@
-import { useState } from 'react';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import products from '../products';
 
 const ProductScreen = () => {
+  const [product, setProduct] = useState({});
   const [size, setSize] = useState(null);
   const [open, setOpen] = useState(false);
   const [isReadMore, setIsReadMore] = useState(true);
 
   const { productId } = useParams();
-  const product = products.find(
-    (product) =>
-      (product.name + ' ' + product.color)
-        .toLowerCase()
-        .replace(/\s+/g, '-')
-        .replace(/[^a-z0-9-]+/g, '') === productId
-  );
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      const { data } = await axios.get(`/api/products/${productId}`);
+      setProduct(data);
+    };
+
+    fetchProduct();
+  }, [productId]);
 
   const toggleReadMore = () => {
     setIsReadMore(!isReadMore);
@@ -29,7 +32,7 @@ const ProductScreen = () => {
         </div>
         <div className='flex flex-col'>
           <div className='opacity-50 text-sm text-right'>Last Sale:</div>
-          <div className='font-bold text-4xl'>{product.lastSale}</div>
+          <div className='font-bold text-4xl'>${product.lastSale}</div>
         </div>
       </div>
       <div className='container mx-auto px-6 max-w-xl'>
@@ -148,7 +151,7 @@ const ProductScreen = () => {
             {product.retailPrice && (
               <>
                 <div className='opacity-25'>Retail Price</div>
-                <div className='mb-3 md:mb-0'>{product.retailPrice}</div>
+                <div className='mb-3 md:mb-0'>${product.retailPrice}</div>
               </>
             )}
             {product.releaseData && (

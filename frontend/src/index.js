@@ -6,6 +6,10 @@ import {
   Route,
   RouterProvider,
 } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import store from './store';
 import './index.css';
 import App from './App';
 import HomeScreen from './screens/HomeScreen';
@@ -23,6 +27,9 @@ const router = createBrowserRouter(
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <RouterProvider router={router} />
+      <ToastContainer />
+    </Provider>
   </React.StrictMode>
 );

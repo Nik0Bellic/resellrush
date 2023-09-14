@@ -3,14 +3,18 @@ module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {
+      screens: {
+        lgm: '1070px',
+        lgl: '1140px',
+      },
       colors: {
         strongYellow: '#FFC700',
       },
       fontFamily: {
-        mont: ['Montserrat', 'sans-serif'],
-        inter: ['Inter', 'serif'],
+        sans: ['Montserrat', 'sans-serif'],
+        mono: ['Inter', 'serif'],
       },
     },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/line-clamp')],
 };

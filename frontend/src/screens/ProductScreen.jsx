@@ -1,7 +1,7 @@
-import { toast } from 'react-toastify';
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Loader from '../components/Loader';
+import Message from '../components/Message';
 import { useGetProductDetailsQuery } from '../slices/productsApiSlice';
 
 const ProductScreen = () => {
@@ -26,7 +26,7 @@ const ProductScreen = () => {
       {isLoading ? (
         <Loader />
       ) : error ? (
-        toast.error(error?.data?.message || error.error)
+        <Message variant='Error' text={error?.data?.message || error.error} />
       ) : (
         <>
           <div className='container mx-auto px-6 lg:px-28 flex justify-between my-8 lg:my-12'>
@@ -72,7 +72,7 @@ const ProductScreen = () => {
                 </div>
               </button>
               {open && (
-                <div className='absolute mr-7 z-10 bg-white border-2 border-black border-t-0 rounded-xl rounded-t-none p-4 pt-10 mt-7 md:mt-5 ml-7'>
+                <div className='absolute mr-7 z-10 bg-white border-2 border-black border-t-0 rounded-xl rounded-t-none p-4 pt-10 mt-6 md:mt-5 ml-7'>
                   <ul className='flex flex-wrap justify-left gap-2 md:gap-3'>
                     {Array.from({ length: 23 }, (_, index) => {
                       const value = 4 + index * 0.5;

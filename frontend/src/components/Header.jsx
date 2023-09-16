@@ -1,12 +1,32 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import SearchBox from './SearchBox';
 import { useState } from 'react';
 import { FaSearch, FaInstagram, FaVk } from 'react-icons/fa';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLogoutMutation } from '../slices/usersApiSlice';
+import { logout } from '../slices/authSlice';
+import { setAuthModalActive } from '../slices/authSlice';
 
 const Header = () => {
   const [isActive, setIsActive] = useState(false);
   const [mobileSearchShown, setMobileSearchShown] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(false);
+
+  const { userInfo } = useSelector((state) => state.auth);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [logoutApiCall] = useLogoutMutation();
+
+  const logoutHandler = async () => {
+    try {
+      await logoutApiCall().unwrap();
+      dispatch(logout());
+      navigate('/');
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <header className='border-b-2 border-black'>
@@ -72,7 +92,7 @@ const Header = () => {
                 />
               </svg>
             </Link>
-            {loggedIn ? (
+            {userInfo ? (
               <Link to='/profile'>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
@@ -90,26 +110,28 @@ const Header = () => {
                 </svg>
               </Link>
             ) : (
-              <Link
-                to='/login'
-                className='px-4 py-1 text-lg text-black
-            outline outline-strongYellow rounded-full hover:scale-110 duration-200'
-              >
-                Sign In
-              </Link>
+              <>
+                <button
+                  className='px-4 py-1 text-lg text-black
+                                outline outline-strongYellow rounded-full hover:scale-110 duration-200'
+                  onClick={() => dispatch(setAuthModalActive(true))}
+                >
+                  Sign In
+                </button>
+              </>
             )}
           </div>
 
           {/* Mobile Search */}
           <form
             onSubmit={(e) => e.preventDefault()}
-            className='absolute -mt-1 right-20 lg:hidden flex w-full max-w-[19rem] pl-20 sm:max-w-sm md:max-w-md'
+            className='absolute -mt-1 -mr-3 right-20 lg:hidden flex w-full max-w-[19rem] pl-20 sm:max-w-sm md:max-w-md'
           >
             <input
               type='text'
               name='q'
               placeholder={`${mobileSearchShown ? 'Search' : ''}`}
-              className={`flex-1 bg-transparent focus:outline-none duration-200 ${
+              className={`flex-1 bg-transparent focus:outline-none duration-200 md:mr-1 ${
                 mobileSearchShown && 'border-b-2 border-black duraion-100'
               }`}
               disabled={!mobileSearchShown}
@@ -117,13 +139,13 @@ const Header = () => {
             <button
               onClick={() => setMobileSearchShown((current) => !current)}
               type='submit'
-              className='px-3 text-2xl font-light bg-transparent hover:text-strongYellow hover:scale-110 duration-100'
+              className='pr-5 pl-1 text-2xl font-light bg-transparent hover:text-strongYellow hover:scale-110 duration-100'
             >
               <FaSearch className='' />
             </button>
           </form>
           <Link
-            className='absolute lg:hidden right-14 -mr-1 -mt-1.5 hover:text-strongYellow hover:scale-110 duration-100'
+            className='absolute lg:hidden right-14 -mr-1.5 -mt-1.5 hover:text-strongYellow hover:scale-110 duration-100'
             to='/favorites'
           >
             <svg
@@ -195,20 +217,33 @@ const Header = () => {
                 >
                   Support
                 </Link>
-                {loggedIn ? (
-                  <Link
-                    href='/profile'
-                    className='hover:px-3 hover:py-2 border-2 border-strongYellow px-3 py-2 rounded-full hover:scale-110 duration-200'
-                  >
-                    My account
-                  </Link>
+                {userInfo ? (
+                  <>
+                    <Link
+                      to='/profile'
+                      className='hover:px-3 hover:py-2 text-black
+                    outline-black rounded-full hover:bg-strongYellow hover:outline hover:scale-110 duration-200'
+                    >
+                      My account
+                    </Link>
+                    <button
+                      onClick={logoutHandler}
+                      className='hover:px-3 hover:py-2
+            outline-black rounded-full hover:bg-strongYellow hover:outline hover:scale-110 duration-200'
+                    >
+                      Logout
+                    </button>
+                  </>
                 ) : (
-                  <Link
-                    to='/login'
-                    className='hover:px-3 hover:py-2 border-2 border-strongYellow px-3 py-2 rounded-full hover:scale-110 duration-200'
-                  >
-                    Sign In
-                  </Link>
+                  <>
+                    <button
+                      className='px-4 py-1 text-lg text-black
+                                outline outline-strongYellow rounded-full hover:scale-110 duration-200'
+                      onClick={() => dispatch(setAuthModalActive(true))}
+                    >
+                      Sign In
+                    </button>
+                  </>
                 )}
               </div>
               <div className='flex space-x-2 mt-20 mb-4 text-3xl'>

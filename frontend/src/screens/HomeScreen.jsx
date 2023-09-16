@@ -1,6 +1,6 @@
-import { toast } from 'react-toastify';
 import Product from '../components/Product';
 import Loader from '../components/Loader';
+import Message from '../components/Message';
 import { useGetProductsQuery } from '../slices/productsApiSlice';
 
 const HomeScreen = () => {
@@ -11,7 +11,7 @@ const HomeScreen = () => {
       {isLoading ? (
         <Loader />
       ) : error ? (
-        toast.error(error?.data?.message || error.error)
+        <Message variant='Error' text={error?.data?.message || error.error} />
       ) : (
         <div className='container mx-auto px-4 lg:px-12 mt-24'>
           <div className='relative flex justify-between w-full border-b-2 border-black pb-2 text-xl lg:text-2xl font-medium'>

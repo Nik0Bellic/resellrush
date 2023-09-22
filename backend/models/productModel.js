@@ -1,38 +1,16 @@
 import mongoose from 'mongoose';
+import { bidSchema, askSchema } from './bidAndAskModels.js';
 
-const stockOrderSchema = mongoose.Schema(
-  {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: 'User',
-    },
-    product: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: 'Product',
-    },
-    type: {
-      type: String,
-      required: true,
-    },
-    quantity: {
-      type: Number,
-      required: true,
-    },
-    size: {
-      type: Number,
-      required: true,
-    },
-    price: {
-      type: Number,
-      required: true,
-    },
+const sizePriceSchema = mongoose.Schema({
+  size: {
+    type: Number,
+    required: true,
   },
-  {
-    timestamps: true,
-  }
-);
+  price: {
+    type: Number,
+    required: true,
+  },
+});
 
 const productSchema = mongoose.Schema(
   {
@@ -90,7 +68,9 @@ const productSchema = mongoose.Schema(
     description: {
       type: String,
     },
-    orders: [stockOrderSchema],
+    bids: [bidSchema],
+    asks: [askSchema],
+    availableSizes: [sizePriceSchema],
     lowestAsk: {
       type: Number,
       required: true,
@@ -107,11 +87,24 @@ const productSchema = mongoose.Schema(
   }
 );
 
-// productSchema.pre('save', function (next) {
-//   this.productIdentifier = (this.name + ' ' + this.color)
-//     .toLowerCase()
-//     .replace(/\s+/g, '-')
-//     .replace(/[^a-z0-9-]+/g, '');
+// productSchema.methods.getAvailableSizesDict = function () {
+//   const dict = {};
+//   this.availableSizes.forEach((sizePrice) => {
+//     dict[sizePrice.size] = sizePrice.price;
+//   });
+//   return dict;
+// };
+
+// productSchema.pre('save', function(next) {
+//   if (this.availableSizes && this.availableSizes.length > 0) {
+//     let lowest = this.availableSizes[0].price;
+//     this.availableSizes.forEach(sizePrice => {
+//       if (sizePrice.price < lowest) {
+//         lowest = sizePrice.price;
+//       }
+//     });
+//     this.lowestAsk = lowest;
+//   }
 //   next();
 // });
 

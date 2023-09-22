@@ -13,6 +13,8 @@ const Header = () => {
 
   const { userInfo } = useSelector((state) => state.auth);
 
+  const { favoriteItems } = useSelector((state) => state.favorites);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -91,6 +93,11 @@ const Header = () => {
                   d='M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z'
                 />
               </svg>
+              {favoriteItems.length > 0 && (
+                <div className='absolute border-2 border-white rounded-full bg-strongYellow text-white text-sm right-32 -mt-5 w-6 flex justify-center items-center'>
+                  {favoriteItems.length}
+                </div>
+              )}
             </Link>
             {userInfo ? (
               <Link to='/profile'>
@@ -162,12 +169,17 @@ const Header = () => {
                 d='M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z'
               />
             </svg>
+            {favoriteItems.length > 0 && (
+              <div className='absolute border-2 border-white rounded-full bg-strongYellow text-white text-xs right-0 -mt-[1.2rem] w-5 flex justify-center items-center'>
+                {favoriteItems.length}
+              </div>
+            )}
           </Link>
 
           {/* Mobile Menu */}
           <div
             className={`absolute top-3 right-1 flex flex-col items-end py-4 pr-4 duration-200 ${
-              isActive && 'border-2 border-black rounded-3xl bg-white z-20'
+              isActive && 'border-2 border-black rounded-3xl bg-white z-30'
             }`}
           >
             {/* Hamburger Button */}

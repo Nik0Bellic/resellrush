@@ -1,4 +1,8 @@
+import { useSelector } from 'react-redux';
+
 const ProfileScreen = () => {
-  return <div>ProfileScreen</div>;
+  const { userInfo } = useSelector((state) => state.auth);
+
+  return <div>{userInfo.email}</div>;
 };
 export default ProfileScreen;

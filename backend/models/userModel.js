@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { bidSchema, askSchema } from './bidAndAskModels.js';
 import bcrypt from 'bcryptjs';
 
 const userSchema = mongoose.Schema(
@@ -25,6 +26,8 @@ const userSchema = mongoose.Schema(
       required: true,
       default: false,
     },
+    bids: [bidSchema],
+    asks: [askSchema],
   },
   {
     timestamps: true,

@@ -1,11 +1,8 @@
-import {
-  AiOutlineInfoCircle,
-  AiOutlineCheck,
-  AiOutlineWarning,
-} from 'react-icons/ai';
+import { AiOutlineInfoCircle, AiOutlineCheck } from 'react-icons/ai';
 import { VscError } from 'react-icons/vsc';
+import { RiErrorWarningLine } from 'react-icons/ri';
 
-const Message = ({ variant, text }) => {
+const Message = ({ variant, text, small }) => {
   let color;
   let icon;
   switch (variant) {
@@ -19,7 +16,7 @@ const Message = ({ variant, text }) => {
       break;
     case 'Warning':
       color = '#cb8925';
-      icon = <AiOutlineWarning />;
+      icon = <RiErrorWarningLine />;
       break;
     case 'Error':
       color = '#ff5757';
@@ -31,9 +28,15 @@ const Message = ({ variant, text }) => {
   }
 
   return (
-    <div className='container mx-auto px-6 lg:px-28 my-7'>
+    <div
+      className={`${
+        small ? 'mb-3 px-0 mx-0' : 'container mx-auto px-6 lg:px-28 my-7'
+      }`}
+    >
       <div
-        className={`w-full relative py-3 md:py-4 lg:py-5 flex items-center pl-5 rounded-md`}
+        className={`w-full relative py-3 md:py-4 lg:py-5 flex items-center rounded-md ${
+          small ? 'px-2 text-sm' : 'px-5'
+        }`}
         style={{
           backgroundColor: `${color}20`,
           color: `${color}E6`,
@@ -46,10 +49,10 @@ const Message = ({ variant, text }) => {
           }}
         ></span>
         <div className='text-2xl md:text-3xl ml-2 md:ml-3'>{icon}</div>
-        <div className='text-sm md:text-base ml-2 mr-3 font-bold'>
-          {variant}
-        </div>
-        <div className='md:text-lg'>{text}</div>
+        {variant !== 'Warning' && (
+          <div className='text-sm md:text-base ml-2 font-bold'>{variant}</div>
+        )}
+        <div className='md:text-lg ml-3'>{text}</div>
       </div>
     </div>
   );
@@ -57,6 +60,7 @@ const Message = ({ variant, text }) => {
 
 Message.defaultProps = {
   variant: 'Info',
+  small: false,
 };
 
 export default Message;

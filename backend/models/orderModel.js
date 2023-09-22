@@ -7,24 +7,39 @@ const orderSchema = mongoose.Schema(
       required: true,
       ref: 'User',
     },
-    product: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: 'Product',
+    orderItem: {
+      name: {
+        type: String,
+        required: true,
+      },
+      color: {
+        type: String,
+        required: true,
+      },
+      image: {
+        type: String,
+        required: true,
+      },
+      size: {
+        type: String,
+        required: true,
+      },
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'Product',
+      },
     },
-    quantity: {
-      type: Number,
-      required: true,
-    },
-    size: {
-      type: Number,
-      required: true,
-    },
-    shippingAddress: {
-      address: { type: String, required: true },
-      city: { type: String, required: true },
-      postalCode: { type: String, required: true },
+    shippingInfo: {
+      shippingService: { type: String, required: true },
+      firstName: { type: String, required: true },
+      lastName: { type: String, required: true },
       country: { type: String, required: true },
+      city: { type: String, required: true },
+      region: { type: String, required: true },
+      address: { type: String, required: true },
+      postalCode: { type: String, required: true },
+      orderComments: { type: String },
     },
     paymentMethod: {
       type: String,
@@ -36,7 +51,7 @@ const orderSchema = mongoose.Schema(
       update_time: { type: String },
       email_address: { type: String },
     },
-    itemsPrice: {
+    purchasePrice: {
       type: Number,
       required: true,
       dfeault: 0.0,
@@ -54,6 +69,7 @@ const orderSchema = mongoose.Schema(
     isPaid: {
       type: Boolean,
       required: true,
+      default: false,
     },
     paidAt: {
       type: Date,

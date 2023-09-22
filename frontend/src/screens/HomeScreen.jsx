@@ -49,13 +49,13 @@ const HomeScreen = () => {
             </div>
           </div>
 
-          <div className='absolute left-0 right-0 mt-5 overflow-x-auto'>
-            <div className='flex'>
-              {products.map((product) => (
-                <Product key={product._id} product={product} />
-              ))}
-            </div>
+          {/* <div className='absolute left-0 right-0 mt-5 overflow-x-auto max-h-20'> */}
+          <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
+            {products.map((product) => (
+              <Product key={product._id} product={product} />
+            ))}
           </div>
+          {/* </div> */}
         </div>
       )}
     </>

@@ -60,6 +60,7 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id);
 
   if (order) {
+    order.status = 'Paid';
     order.isPaid = true;
     order.paidAt = Date.now();
     order.paymentResult = {

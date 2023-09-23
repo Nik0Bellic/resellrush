@@ -30,7 +30,9 @@ const Message = ({ variant, text, small }) => {
   return (
     <div
       className={`${
-        small ? 'mb-3 px-0 mx-0' : 'container mx-auto px-6 lg:px-28 my-7'
+        small
+          ? 'mb-3 px-0 mx-0'
+          : 'container mx-auto px-6 lg:px-28 xl:px-6 my-7'
       }`}
     >
       <div

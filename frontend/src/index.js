@@ -30,8 +30,8 @@ const router = createBrowserRouter(
 
       <Route path='' element={<PrivateRoute />}>
         <Route path='/buy/:productId/shipping' element={<ShippingScreen />} />
-        <Route path='/profile' element={<ProfileScreen />} />
         <Route path='/order/:id' element={<OrderScreen />} />
+        <Route path='/profile' element={<ProfileScreen />} />
       </Route>
     </Route>
   )

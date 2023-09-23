@@ -43,7 +43,6 @@ const AuthPopup = () => {
           >
             Sign In
           </label>
-
           <input
             type='radio'
             id='signUp'

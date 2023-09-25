@@ -41,7 +41,7 @@ const OrderScreen = () => {
   function onApprove(data, actions) {
     return actions.order.capture().then(async function (details) {
       try {
-        await payOrder({ orderId, details });
+        await payOrder({ orderId, details }).unwrap();
         refetch();
         setPaymentMessage('Payment successful');
         setTimeout(() => setPaymentMessage(''), 10000);
@@ -60,7 +60,7 @@ const OrderScreen = () => {
   // }
 
   function onError(err) {
-    setPaymentMessage(err.message);
+    setPaymentMessage(err?.data?.message || err.error);
     setTimeout(() => setPaymentMessage(''), 10000);
   }
 

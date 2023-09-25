@@ -41,7 +41,8 @@ const ProductEditScreen = () => {
   const [updateProduct, { isLoading: loadingUpdate }] =
     useUpdateProductMutation();
 
-  const [uploadProductImage] = useUploadProductImageMutation();
+  const [uploadProductImage, { isLoading: loadingUpload }] =
+    useUploadProductImageMutation();
 
   const [deleteProduct, { isLoading: loadingDelete }] =
     useDeleteProductMutation();
@@ -101,32 +102,30 @@ const ProductEditScreen = () => {
       }
     }
 
-    const updatedProduct = {
-      productId,
-      name,
-      color,
-      image: updatedImage,
-      category,
-      brand,
-      modelLine,
-      series,
-      height,
-      style,
-      colorway,
-      retailPrice,
-      releaseData,
-      description,
-    };
-
-    const result = await updateProduct(updatedProduct);
-    refetch();
-    if (result.error) {
-      setEditError(result.error);
-      setTimeout(() => setEditError(''), 10000);
-    } else {
+    try {
+      await updateProduct({
+        productId,
+        name,
+        color,
+        image: updatedImage,
+        category,
+        brand,
+        modelLine,
+        series,
+        height,
+        style,
+        colorway,
+        retailPrice,
+        releaseData,
+        description,
+      }).unwrap();
+      refetch();
       navigate('/admin/productList', {
         state: { message: 'Product updated' },
       });
+    } catch (err) {
+      setEditError(err?.data?.message || err.error);
+      setTimeout(() => setEditError(''), 10000);
     }
   };
 
@@ -162,7 +161,7 @@ const ProductEditScreen = () => {
       {isLoading ? (
         <Loader />
       ) : error ? (
-        <Message variant='Error' text={error} />
+        <Message variant='Error' text={error?.data?.message || error.error} />
       ) : (
         <form
           onSubmit={submitHandler}
@@ -205,8 +204,9 @@ const ProductEditScreen = () => {
                 </section>
               )}
             </Dropzone>
+            {loadingUpload && <Loader />}
             {imageUploadError && (
-              <Message variant='Error' text={imageUploadError} />
+              <Message variant='Error' text={imageUploadError} small={true} />
             )}
           </div>
           <div>

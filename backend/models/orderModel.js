@@ -54,7 +54,12 @@ const orderSchema = mongoose.Schema(
     purchasePrice: {
       type: Number,
       required: true,
-      dfeault: 0.0,
+      default: 0.0,
+    },
+    processingFee: {
+      type: Number,
+      required: true,
+      default: 0.0,
     },
     shippingPrice: {
       type: Number,
@@ -64,7 +69,7 @@ const orderSchema = mongoose.Schema(
     totalPrice: {
       type: Number,
       required: true,
-      dfeault: 0.0,
+      default: 0.0,
     },
     status: {
       type: String,

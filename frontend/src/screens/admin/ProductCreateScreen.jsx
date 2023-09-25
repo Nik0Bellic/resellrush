@@ -75,7 +75,7 @@ const ProductCreateScreen = () => {
         description,
       });
       navigate('/admin/productList', {
-        state: { message: 'Product created successfully!' },
+        state: { message: 'Product created' },
       });
     } catch (err) {
       setCreateError(err?.data?.message || err.error);
@@ -92,8 +92,18 @@ const ProductCreateScreen = () => {
   }, [image]);
 
   const handleDrop = (acceptedFiles) => {
-    setFile(acceptedFiles[0]);
-    setImage(URL.createObjectURL(acceptedFiles[0]));
+    const file = acceptedFiles[0];
+    const fileType = file.type;
+
+    if (/image\/jpe?g|image\/png|image\/webp/.test(fileType)) {
+      setFile(file);
+      setImage(URL.createObjectURL(file));
+      setImageUploadError('');
+    } else {
+      setImageUploadError(
+        'Please upload a valid image file (jpg, jpeg, png, webp).'
+      );
+    }
   };
 
   return (
@@ -148,7 +158,7 @@ const ProductCreateScreen = () => {
           )}
         </Dropzone>
         {imageUploadError && (
-          <Message variant='Error' text={imageUploadError} />
+          <Message variant='Error' text={imageUploadError} small={true} />
         )}
         <input
           type='text'

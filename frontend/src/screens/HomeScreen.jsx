@@ -1,10 +1,18 @@
+import { useParams } from 'react-router-dom';
 import Product from '../components/Product';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
+import Paginate from '../components/Paginate';
+import ProductCarousel from '../components/ProductCarousel';
 import { useGetProductsQuery } from '../slices/productsApiSlice';
 
 const HomeScreen = () => {
-  const { data: products, isLoading, error } = useGetProductsQuery();
+  const { pageNumber, keyword } = useParams();
+
+  const { data, isLoading, error } = useGetProductsQuery({
+    keyword,
+    pageNumber,
+  });
 
   return (
     <>
@@ -13,8 +21,13 @@ const HomeScreen = () => {
       ) : error ? (
         <Message variant='Error' text={error?.data?.message || error.error} />
       ) : (
-        <div className='container mx-auto px-4 lg:px-12 mt-24'>
-          <div className='relative flex justify-between w-full border-b-2 border-black pb-2 text-xl lg:text-2xl font-medium'>
+        <div className='container mx-auto px-4 lg:px-12 mt-10'>
+          {!keyword && (
+            <div className='relative'>
+              <ProductCarousel />
+            </div>
+          )}
+          <div className='mt-56 sm:mt-72 relative flex justify-between w-full border-b-2 border-black pb-2 text-xl lg:text-2xl font-medium'>
             <div>/</div>
             <div>Popular</div>
             <div className='flex'>
@@ -51,10 +64,15 @@ const HomeScreen = () => {
 
           {/* <div className='absolute left-0 right-0 mt-5 overflow-x-auto max-h-20'> */}
           <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
-            {products.map((product) => (
+            {data.products.map((product) => (
               <Product key={product._id} product={product} />
             ))}
           </div>
+          <Paginate
+            pages={data.pages}
+            page={data.page}
+            keyword={keyword ? keyword : ''}
+          />
           {/* </div> */}
         </div>
       )}

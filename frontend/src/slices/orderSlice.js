@@ -15,23 +15,17 @@ const orderSlice = createSlice({
     addToOrder: (state, action) => {
       state.orderItem = action.payload;
 
-      // Purchase price
-      state.purchasePrice = addDecimals(Number(state.orderItem.purchasePrice));
+      const purchasePrice = state.orderItem.purchasePrice;
+      state.purchasePrice = addDecimals(purchasePrice);
 
-      // Shipping price
-      state.shippingPrice = '50';
+      const shippingPrice = 50;
+      state.shippingPrice = addDecimals(shippingPrice);
 
-      // Processing fee (12%)
-      state.processingFee = addDecimals(
-        Number(0.12 * state.purchasePrice).toFixed(2)
-      );
+      const processingFee = 0.12 * purchasePrice;
+      state.processingFee = addDecimals(processingFee);
 
-      // Total price
-      state.totalPrice = (
-        Number(state.purchasePrice) +
-        Number(state.shippingPrice) +
-        Number(state.processingFee)
-      ).toFixed(2);
+      const totalPrice = purchasePrice + shippingPrice + processingFee;
+      state.totalPrice = addDecimals(totalPrice);
 
       localStorage.setItem('order', JSON.stringify(state));
     },
@@ -43,10 +37,11 @@ const orderSlice = createSlice({
       state.paymentMethod = action.payload;
       localStorage.setItem('order', JSON.stringify(state));
     },
+    resetOrder: (state) => (state = initialState),
   },
 });
 
-export const { addToOrder, saveShippingInfo, savePaymentMethod } =
+export const { addToOrder, saveShippingInfo, savePaymentMethod, resetOrder } =
   orderSlice.actions;
 
 export default orderSlice.reducer;

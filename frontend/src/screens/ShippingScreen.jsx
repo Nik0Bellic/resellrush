@@ -418,7 +418,13 @@ const ShippingScreen = () => {
                   </div>
                 </div>
 
-                {error && <Message variant='Error' text={error} small={true} />}
+                {error && (
+                  <Message
+                    variant='Error'
+                    text={error?.data?.message || error.error}
+                    small={true}
+                  />
+                )}
 
                 {orderErr && (
                   <Message variant='Error' text={orderErr} small={true} />

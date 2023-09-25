@@ -90,7 +90,7 @@ const UserEditScreen = () => {
       {isLoading ? (
         <Loader />
       ) : error ? (
-        <Message variant='Error' text={error} />
+        <Message variant='Error' text={error?.data?.message || error.error} />
       ) : (
         <form
           onSubmit={submitHandler}

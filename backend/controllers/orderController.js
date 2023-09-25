@@ -1,22 +1,41 @@
 import asyncHandler from '../middleware/asyncHandler.js';
 import Order from '../models/orderModel.js';
+import Product from '../models/productModel.js';
+import { calcPrices } from '../utils/calcPrices.js';
+import { verifyPayPalPayment, checkIfNewTransaction } from '../utils/paypal.js';
 
 // @desc    Create new order
 // @route   POST /api/orders
 // @access  Private
 const createOrder = asyncHandler(async (req, res) => {
-  const {
-    orderItem,
-    shippingInfo,
-    paymentMethod,
-    purchasePrice,
-    processingFee,
-    shippingPrice,
-    totalPrice,
-  } = req.body;
+  const { orderItem: itemFromClient, shippingInfo, paymentMethod } = req.body;
+
+  const itemFromDB = await Product.findById(itemFromClient._id);
+
+  if (!itemFromDB) {
+    res.status(400);
+    throw new Error('Invalid order item');
+  }
+
+  const lowestAsk = Math.min(...itemFromDB.asks.map((ask) => ask.price));
+
+  if (itemFromClient.purchasePrice !== lowestAsk) {
+    res.status(400);
+    throw new Error('Buy price is not equal to the lowest ask');
+  }
+
+  const orderItem = {
+    ...itemFromDB.toObject(),
+    product: itemFromClient._id,
+    size: itemFromClient.size,
+    _id: undefined,
+  };
+
+  const { purchasePrice, shippingPrice, processingFee, totalPrice } =
+    calcPrices(lowestAsk);
 
   const order = new Order({
-    orderItem: { ...orderItem, product: orderItem._id, _id: undefined },
+    orderItem: { ...orderItem },
     user: req.user._id,
     shippingInfo,
     paymentMethod,
@@ -57,9 +76,19 @@ const getOrderbyId = asyncHandler(async (req, res) => {
 // @route   PUT /api/orders/:id/pay
 // @access  Private
 const updateOrderToPaid = asyncHandler(async (req, res) => {
+  const { verified, value } = await verifyPayPalPayment(req.body.id);
+  if (!verified) throw new Error('Payment not verified');
+
+  // check if this transaction has been used before
+  const isNewTransaction = await checkIfNewTransaction(Order, req.body.id);
+  if (!isNewTransaction) throw new Error('Transaction has been used before');
+
   const order = await Order.findById(req.params.id);
 
   if (order) {
+    const paidCorrectAmount = order.totalPrice === Number(value);
+    if (!paidCorrectAmount) throw new Error('Incorrect amount paid');
+
     order.status = 'Paid';
     order.isPaid = true;
     order.paidAt = Date.now();
@@ -72,7 +101,7 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
 
     const updatedOrder = await order.save();
 
-    res.status(200).json(updatedOrder);
+    res.json(updatedOrder);
   } else {
     res.status(404);
     throw new Error('Order not found');

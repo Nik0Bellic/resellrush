@@ -17,6 +17,7 @@ const BuyScreen = () => {
 
   const [bidPrice, setBidPrice] = useState('');
   const [bidExpiration, setBidExpiration] = useState(30);
+  const [invalidBidMessage, setInvalidBidMessage] = useState('');
 
   const [discountCode, setDiscountCode] = useState('');
 
@@ -84,8 +85,13 @@ const BuyScreen = () => {
     } else if (!userInfo) {
       dispatch(setAuthModalActive(true));
     } else if (isBid) {
-      dispatch(addToOrder({ ...product, size, purchasePrice: bidPrice }));
-      navigate(`/buy/${productId}/shipping`);
+      if (bidPrice === '' || bidPrice < 25) {
+        setInvalidBidMessage('Bid price must be greater than or equal to $25');
+        setTimeout(() => setInvalidBidMessage(''), 10000);
+      } else {
+        dispatch(addToOrder({ ...product, size, purchasePrice: bidPrice }));
+        navigate(`/buy/${productId}/shipping`);
+      }
     } else {
       dispatch(addToOrder({ ...product, size, purchasePrice }));
       navigate(`/buy/${productId}/shipping`);
@@ -226,6 +232,13 @@ const BuyScreen = () => {
                 </div>
                 {isBid ? (
                   <>
+                    {invalidBidMessage && (
+                      <Message
+                        variant='Warning'
+                        text={invalidBidMessage}
+                        small={true}
+                      />
+                    )}
                     <div className='flex border-2 border-black rounded-full text-sm sm:text-base lg:text-lg'>
                       <div className='px-3 sm:px-5 py-2 whitespace-nowrap'>
                         Place Bid

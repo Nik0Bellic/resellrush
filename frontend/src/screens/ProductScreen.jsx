@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
+import Meta from '../components/Meta';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetProductDetailsQuery } from '../slices/productsApiSlice';
 import { toggleFavorite } from '../slices/favoritesSlice';
@@ -69,6 +70,7 @@ const ProductScreen = () => {
         <Message variant='Error' text={error?.data?.message || error.error} />
       ) : (
         <>
+          <Meta title={`${product.name} ${product.color}`} />
           <div className='container mx-auto px-6 lg:px-28 flex justify-between my-8 lg:my-12'>
             <div>
               <div className='text-xl font-semibold'>{product.name}</div>

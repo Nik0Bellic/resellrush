@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import SearchBox from './SearchBox';
 import { useState } from 'react';
 import { FaSearch, FaInstagram, FaVk } from 'react-icons/fa';
@@ -6,6 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLogoutMutation } from '../slices/usersApiSlice';
 import { logout } from '../slices/authSlice';
 import { setAuthModalActive } from '../slices/authSlice';
+import { resetFavorites } from '../slices/favoritesSlice';
+import { resetOrder } from '../slices/orderSlice';
 
 const Header = () => {
   const [isActive, setIsActive] = useState(false);
@@ -19,12 +21,29 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const { keyword: urlKeyword } = useParams();
+  const [keyword, setKeyword] = useState(urlKeyword || '');
+
+  const mobileSearchHandler = (e) => {
+    e.preventDefault();
+    if (!urlKeyword || keyword) {
+      if (keyword.trim()) {
+        setKeyword('');
+        navigate(`/search/${keyword}`);
+      } else {
+        navigate('/');
+      }
+    }
+  };
+
   const [logoutApiCall] = useLogoutMutation();
 
   const logoutHandler = async () => {
     try {
       await logoutApiCall().unwrap();
       dispatch(logout());
+      dispatch(resetFavorites());
+      dispatch(resetOrder());
       navigate('/');
     } catch (err) {
       console.log(err);
@@ -184,7 +203,7 @@ const Header = () => {
 
           {/* Mobile Search */}
           <form
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={mobileSearchHandler}
             className='absolute -mt-1 -mr-3 right-20 lg:hidden flex w-full max-w-[19rem] pl-20 sm:max-w-sm md:max-w-md'
           >
             <input
@@ -194,6 +213,8 @@ const Header = () => {
               className={`flex-1 bg-transparent focus:outline-none duration-200 md:mr-1 ${
                 mobileSearchShown && 'border-b-2 border-black duraion-100'
               }`}
+              onChange={(e) => setKeyword(e.target.value)}
+              value={keyword}
               disabled={!mobileSearchShown}
             />
             <button

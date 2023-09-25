@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
+import Paginate from '../../components/Paginate';
 import { FaEdit } from 'react-icons/fa';
 import { useGetProductsQuery } from '../../slices/productsApiSlice';
 import {
@@ -56,10 +57,12 @@ const columns = [
 ];
 
 const ProductListScreen = () => {
-  const { data: products, isLoading, error } = useGetProductsQuery();
+  const { pageNumber } = useParams();
+
+  const { data, isLoading, error } = useGetProductsQuery({ pageNumber });
 
   const table = useReactTable({
-    data: products,
+    data: data?.products || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -97,7 +100,7 @@ const ProductListScreen = () => {
         {isLoading ? (
           <Loader />
         ) : error ? (
-          <Message variant='Error' text={error} />
+          <Message variant='Error' text={error?.data?.message || error.error} />
         ) : (
           <div className='mt-12'>
             <table className='min-w-full bg-transparent'>
@@ -146,6 +149,7 @@ const ProductListScreen = () => {
                 ))}
               </tbody>
             </table>
+            <Paginate pages={data.pages} page={data.page} isAdmin={true} />
           </div>
         )}
       </div>

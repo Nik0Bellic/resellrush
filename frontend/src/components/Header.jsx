@@ -10,6 +10,7 @@ import { setAuthModalActive } from '../slices/authSlice';
 const Header = () => {
   const [isActive, setIsActive] = useState(false);
   const [mobileSearchShown, setMobileSearchShown] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const { userInfo } = useSelector((state) => state.auth);
 
@@ -100,22 +101,74 @@ const Header = () => {
               )}
             </Link>
             {userInfo ? (
-              <Link to='/profile'>
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                  strokeWidth={1.3}
-                  stroke='currentColor'
-                  className='w-10 hover:text-strongYellow hover:scale-110 duration-100'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    d='M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z'
-                  />
-                </svg>
-              </Link>
+              <div
+                className='relative inline-block text-left'
+                onMouseEnter={() => setShowDropdown(true)}
+                onMouseLeave={() => setShowDropdown(false)}
+              >
+                <Link to='/profile'>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    strokeWidth={1.3}
+                    stroke='currentColor'
+                    className='w-10 hover:text-strongYellow hover:scale-110 duration-100'
+                  >
+                    <path
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      d='M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z'
+                    />
+                  </svg>
+                </Link>
+
+                {showDropdown && (
+                  <div className='absolute z-30 right-0 w-48 xl:w-60 pt-3 rounded-md shadow-lg'>
+                    <div className='border-2 border-black rounded-xl bg-white shadow-xs flex flex-col space-y-6 p-6 xl:p-10 xl:text-xl xl:space-y-8'>
+                      <Link
+                        to='/profile'
+                        className='hover:px-3 hover:py-2 xl:hover:px-7 xl:hover:py-2.5 w-min
+            outline-black rounded-full hover:bg-strongYellow hover:outline hover:scale-110 duration-200'
+                      >
+                        Profile
+                      </Link>
+                      {userInfo.isAdmin && (
+                        <>
+                          <Link
+                            to='/admin/productList'
+                            className='hover:px-3 hover:py-2 xl:hover:px-7 xl:hover:py-2.5 w-min text-orange-500
+          outline-black rounded-full hover:bg-strongYellow hover:outline hover:scale-110 duration-200'
+                          >
+                            Products
+                          </Link>
+                          <Link
+                            to='/admin/userList'
+                            className='hover:px-3 hover:py-2 xl:hover:px-7 xl:hover:py-2.5 w-min text-orange-500
+          outline-black rounded-full hover:bg-strongYellow hover:outline hover:scale-110 duration-200'
+                          >
+                            Users
+                          </Link>
+                          <Link
+                            to='/admin/orderList'
+                            className='hover:px-3 hover:py-2 xl:hover:px-7 xl:hover:py-2.5 w-min text-orange-500
+            outline-black rounded-full hover:bg-strongYellow hover:outline hover:scale-110 duration-200'
+                          >
+                            Orders
+                          </Link>
+                        </>
+                      )}
+                      <button
+                        onClick={logoutHandler}
+                        className='hover:px-3 hover:py-2 xl:hover:px-7 xl:hover:py-2.5 w-min
+            outline-black rounded-full hover:bg-strongYellow hover:outline hover:scale-110 duration-200 text-left'
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             ) : (
               <>
                 <button
@@ -238,6 +291,31 @@ const Header = () => {
                     >
                       My account
                     </Link>
+                    {userInfo.isAdmin && (
+                      <>
+                        <Link
+                          to='/admin/productList'
+                          className='hover:px-3 hover:py-2 text-orange-500
+                    outline-black rounded-full hover:bg-strongYellow hover:outline hover:scale-110 duration-200'
+                        >
+                          Products
+                        </Link>
+                        <Link
+                          to='/admin/userList'
+                          className='hover:px-3 hover:py-2 text-orange-500
+                    outline-black rounded-full hover:bg-strongYellow hover:outline hover:scale-110 duration-200'
+                        >
+                          Users
+                        </Link>
+                        <Link
+                          to='/admin/orderList'
+                          className='hover:px-3 hover:py-2 text-orange-500
+                    outline-black rounded-full hover:bg-strongYellow hover:outline hover:scale-110 duration-200'
+                        >
+                          Orders
+                        </Link>
+                      </>
+                    )}
                     <button
                       onClick={logoutHandler}
                       className='hover:px-3 hover:py-2

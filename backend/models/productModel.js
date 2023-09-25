@@ -87,6 +87,14 @@ const productSchema = mongoose.Schema(
   }
 );
 
+productSchema.pre('save', function (next) {
+  this.productIdentifier = (this.name + ' ' + this.color)
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]+/g, '');
+  next();
+});
+
 // productSchema.methods.getAvailableSizesDict = function () {
 //   const dict = {};
 //   this.availableSizes.forEach((sizePrice) => {

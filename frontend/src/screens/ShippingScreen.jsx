@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
-import countries from 'i18n-iso-countries';
-import enLocate from 'i18n-iso-countries/langs/en.json';
+// import countries from 'i18n-iso-countries';
+// import enLocate from 'i18n-iso-countries/langs/en.json';
 import { saveShippingInfo, savePaymentMethod } from '../slices/orderSlice';
 import Loader from '../components/Loader';
 import { useCreateOrderMutation } from '../slices/ordersApiSlice';
@@ -113,17 +113,17 @@ const ShippingScreen = () => {
 
       try {
         const res = await createOrder({
-          orderItem: orderItem,
-          shippingInfo: shippingInfo,
-          paymentMethod: paymentMethod,
-          purchasePrice: purchasePrice,
-          processingFee: processingFee,
-          shippingPrice: shippingPrice,
-          totalPrice: totalPrice,
+          orderItem,
+          shippingInfo,
+          paymentMethod,
+          purchasePrice,
+          processingFee,
+          shippingPrice,
+          totalPrice,
         }).unwrap();
         navigate(`/order/${res._id}`);
       } catch (err) {
-        setOrderErr(err);
+        setOrderErr(err?.data?.message || err.error);
         setTimeout(() => setOrderErr(false), 10000);
       }
     }
@@ -421,11 +421,7 @@ const ShippingScreen = () => {
                 {error && <Message variant='Error' text={error} small={true} />}
 
                 {orderErr && (
-                  <Message
-                    variant='Error'
-                    text={orderErr?.data?.message || orderErr.error}
-                    small={true}
-                  />
+                  <Message variant='Error' text={orderErr} small={true} />
                 )}
 
                 <div className='pt-4 lg:pt-6 w-full flex justify-between sm:text-lg lg:text-xl'>
@@ -433,7 +429,7 @@ const ShippingScreen = () => {
                     to={`/buy/${orderItem.productIdentifier}`}
                     className='border-2 border-black text-center px-4 sm:px-5 lg:px-8 xl:px-10 py-1.5 sm:py-2 xl:py-3 rounded-full hover:scale-110 hover:border-strongYellow active:bg-strongYellow active:border-black duration-200'
                   >
-                    Back
+                    Go Back
                   </Link>
                   <button
                     role='link'

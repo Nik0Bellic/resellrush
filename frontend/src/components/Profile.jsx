@@ -127,7 +127,7 @@ const Profile = () => {
         <div className={`${!changeEnabled && 'col-span-2'} xl:col-span-1`}>
           <div className='font-medium opacity-25 text-xs'>Email</div>
           <input
-            type='text'
+            type='email'
             placeholder='Email'
             required={true}
             disabled={!changeEnabled}

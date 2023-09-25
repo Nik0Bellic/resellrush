@@ -1,9 +1,7 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Product from '../components/Product';
 
 const FavoritesScreen = () => {
-  const dispatch = useDispatch();
-
   const { favoriteItems } = useSelector((state) => state.favorites);
 
   return (

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
@@ -7,10 +8,14 @@ import {
   useGetOrderDetailsQuery,
   useGetPayPalClientIdQuery,
   usePayOrderMutation,
+  useDeliverOrderMutation,
 } from '../slices/ordersApiSlice';
 
 const OrderScreen = () => {
   const [paymentMessage, setPaymentMessage] = useState('');
+  const [deliverMessage, setDeliverMessage] = useState('');
+
+  const { userInfo } = useSelector((state) => state.auth);
 
   const { id: orderId } = useParams();
 
@@ -22,6 +27,10 @@ const OrderScreen = () => {
   } = useGetOrderDetailsQuery(orderId);
 
   const [payOrder, { isLoading: loadingPay }] = usePayOrderMutation();
+
+  const [deliverOrder, { isLoading: loadingDeliver }] =
+    useDeliverOrderMutation();
+
   const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
   const {
     data: paypal,
@@ -35,18 +44,20 @@ const OrderScreen = () => {
         await payOrder({ orderId, details });
         refetch();
         setPaymentMessage('Payment successful');
+        setTimeout(() => setPaymentMessage(''), 10000);
       } catch (err) {
         setPaymentMessage(err?.data?.message || err.message);
+        setTimeout(() => setPaymentMessage(''), 10000);
       }
     });
   }
 
-  async function onApproveTest() {
-    await payOrder({ orderId, details: { payer: {} } });
-    refetch();
-    setPaymentMessage('Payment successful');
-    setTimeout(() => setPaymentMessage(''), 10000);
-  }
+  // async function onApproveTest() {
+  //   await payOrder({ orderId, details: { payer: {} } });
+  //   refetch();
+  //   setPaymentMessage('Payment successful');
+  //   setTimeout(() => setPaymentMessage(''), 10000);
+  // }
 
   function onError(err) {
     setPaymentMessage(err.message);
@@ -89,6 +100,20 @@ const OrderScreen = () => {
     }
   }, [order, paypal, paypalDispatch, loadingPayPal, errorPaypal]);
 
+  const deliverOrderHandler = async () => {
+    if (window.confirm('Are you sure this order was delivered?')) {
+      try {
+        await deliverOrder(orderId);
+        refetch();
+        setDeliverMessage('Order Delivered');
+        setTimeout(() => setDeliverMessage(''), 10000);
+      } catch (err) {
+        setDeliverMessage(err?.data?.message || err.message);
+        setTimeout(() => setDeliverMessage(''), 10000);
+      }
+    }
+  };
+
   return isLoading ? (
     <Loader />
   ) : error ? (
@@ -130,25 +155,29 @@ const OrderScreen = () => {
             />
           </div>
           <div className='flex flex-col space-y-4 w-full max-w-md'>
-            <div className='font-bold text-xl mb-3'>Order</div>
-            <p>
+            <div className='font-bold text-xl'>Order</div>
+            <div className='-mt-3'>
+              <strong>Order Number: </strong>
+              {order._id}
+            </div>
+            <div>
               <strong>Full Name: </strong> {order.shippingInfo.firstName}{' '}
               {order.shippingInfo.lastName}
-            </p>
-            <p>
+            </div>
+            <div>
               <strong>Email: </strong> {order.user.email}
-            </p>
-            <p>
+            </div>
+            <div>
               <strong>Address: </strong> {order.shippingInfo.address},{' '}
               {order.shippingInfo.city}, {order.shippingInfo.region},{' '}
               {order.shippingInfo.country} {order.shippingInfo.postalCode}
-            </p>
-            <p>
+            </div>
+            <div>
               <strong>Shipping: </strong> {order.shippingInfo.shippingService}
-            </p>
-            <p>
+            </div>
+            <div>
               <strong>Payment Method: </strong> {order.paymentMethod}
-            </p>
+            </div>
             {order.shippingInfo.orderComments && (
               <div>
                 <strong>Order Comments: </strong>
@@ -208,6 +237,31 @@ const OrderScreen = () => {
                   paymentMessage === 'Payment successful' ? 'Success' : 'Error'
                 }
                 text={paymentMessage}
+                small={true}
+              />
+            )}
+
+            {loadingDeliver && <Loader />}
+
+            {userInfo &&
+              userInfo.isAdmin &&
+              order.isPaid &&
+              !order.isDelivered && (
+                <button
+                  type='button'
+                  className='px-3 py-2 text-black
+                  border-orange-600 border-2 rounded-lg hover:bg-strongYellow hover:border hover:scale-110 duration-200 w-full'
+                  onClick={deliverOrderHandler}
+                >
+                  Mark As Delivered
+                </button>
+              )}
+            {deliverMessage && (
+              <Message
+                variant={
+                  deliverMessage === 'Order Delivered' ? 'Success' : 'Error'
+                }
+                text={deliverMessage}
                 small={true}
               />
             )}

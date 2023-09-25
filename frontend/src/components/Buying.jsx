@@ -1,13 +1,67 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useGetMyOrdersQuery } from '../slices/ordersApiSlice';
 import Message from './Message';
 import Loader from './Loader';
-import OrderTable from './OrdersTable';
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import { FaArrowRightLong } from 'react-icons/fa6';
+
+const columnHelper = createColumnHelper();
+
+const columns = [
+  columnHelper.accessor((row) => row.orderItem?.image, {
+    id: 'image',
+    cell: (info) => <img src={info.getValue()} alt='Order Item' width='100' />,
+    header: '',
+  }),
+  columnHelper.accessor('orderItem', {
+    header: 'Item',
+    cell: (info) => (
+      <div>
+        <div className='text-sm opacity-75'>{info.getValue()?.name}</div>
+        <div className='font-semibold'>{info.getValue()?.color}</div>
+        <div>Size: {info.getValue()?.size}</div>
+      </div>
+    ),
+  }),
+  columnHelper.accessor((row) => row.purchasePrice, {
+    id: 'price',
+    header: 'Price',
+    cell: (info) => <div className='font-bold'>${info.getValue()}</div>,
+  }),
+  columnHelper.accessor((row) => row.status, {
+    id: 'status',
+    header: 'Status',
+    cell: (info) => (
+      <div className='flex flex-col justify-between items-end h-24 py-2'>
+        <div>{info.getValue()}</div>
+        <Link
+          className='flex items-center hover:text-strongYellow'
+          to={`/order/${info.row.original._id}`}
+        >
+          <span>Details</span>
+          <FaArrowRightLong className='ml-2 hidden sm:inline' />
+        </Link>
+      </div>
+    ),
+  }),
+];
 
 const Buying = () => {
   const [buyingType, setBuyingType] = useState('current');
 
   const { data: orders, isLoading, error } = useGetMyOrdersQuery();
+
+  const table = useReactTable({
+    data: orders,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   return (
     <>
@@ -71,7 +125,54 @@ const Buying = () => {
               text={error?.data?.message || error.error}
             />
           ) : (
-            <OrderTable orders={orders} />
+            <div className='mt-8'>
+              <table className='min-w-full bg-transparent'>
+                <thead>
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <tr key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => (
+                        <th
+                          key={header.id}
+                          style={
+                            header.id === 'status'
+                              ? { textAlign: 'right' }
+                              : { textAlign: 'left' }
+                          }
+                        >
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </th>
+                      ))}
+                    </tr>
+                  ))}
+                </thead>
+                <tbody className='bg-transparent'>
+                  {table.getRowModel().rows.map((row, index) => (
+                    <tr
+                      key={row.id}
+                      className={`${
+                        index < table.getRowModel().rows.length - 1
+                          ? 'border-b-2 border-black'
+                          : ''
+                      }`}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <td key={cell.id} className='py-2'>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </>
       )}

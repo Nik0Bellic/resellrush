@@ -21,7 +21,6 @@ const BuyScreen = () => {
   const [discountCode, setDiscountCode] = useState('');
 
   const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
 
   const [size, setSize] = useState('');
   const [purchasePrice, setPurchasePrice] = useState(null);
@@ -36,6 +35,7 @@ const BuyScreen = () => {
   } = useGetProductDetailsQuery(productId);
 
   useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
     if (product) {
       const availableSizes = product.availableSizes;
       setAvailableSizes(availableSizes);
@@ -59,7 +59,7 @@ const BuyScreen = () => {
         setPurchasePrice(product.lowestAsk);
       }
     }
-  }, [product]);
+  }, [product, location.search]);
 
   const handleSizeChoice = (value) => {
     setSize(value);

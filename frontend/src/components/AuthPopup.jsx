@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLoginMutation, useRegisterMutation } from '../slices/usersApiSlice';
 import { setCredentials, setAuthModalActive } from '../slices/authSlice';
-import { toast } from 'react-toastify';
+import Message from './Message';
 
 const AuthPopup = () => {
   const { authModalActive } = useSelector((state) => state.auth);
@@ -15,7 +15,7 @@ const AuthPopup = () => {
 
   return (
     <div
-      className={`w-[100vw] h-[100vh] bg-black bg-opacity-40 fixed top-0 left-0 flex justify-center items-center opacity-0 pointer-events-none duration-300 z-30 ${
+      className={`w-[100vw] h-[100vh] bg-black bg-opacity-60 fixed top-0 left-0 flex justify-center items-center opacity-0 pointer-events-none duration-300 z-30 ${
         authModalActive && 'opacity-100 pointer-events-auto'
       }`}
       onClick={() => dispatch(setAuthModalActive(false))}
@@ -78,6 +78,8 @@ const SignInForm = () => {
 
   const [login, { isLoading }] = useLoginMutation();
 
+  const [loginError, setLoginError] = useState('');
+
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -85,12 +87,21 @@ const SignInForm = () => {
       dispatch(setCredentials({ ...res }));
       dispatch(setAuthModalActive(false));
     } catch (err) {
-      toast.error(err?.data?.message || err.error);
+      setLoginError(err?.data?.message || err.error);
+      setTimeout(() => setLoginError(''), 10000);
     }
   };
 
   return (
     <div className='mt-5'>
+      {loginError && (
+        <Message
+          variant='Error'
+          noLabel={true}
+          text={loginError}
+          small={true}
+        />
+      )}
       <form onSubmit={onSubmit} className='w-full'>
         <input
           type='email'
@@ -108,6 +119,7 @@ const SignInForm = () => {
             className='w-full focus:outline-none placeholder:text-black pb-1 mt-3 pr-1'
           />
           <button
+            type='button'
             className='mt-1.5'
             onClick={() => setShowPassword((prev) => !prev)}
           >
@@ -270,6 +282,8 @@ const SignUpForm = () => {
 
   const [register, { isLoading }] = useRegisterMutation();
 
+  const [registerError, setRegisterError] = useState('');
+
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -282,12 +296,21 @@ const SignUpForm = () => {
       dispatch(setCredentials({ ...res }));
       dispatch(setAuthModalActive(false));
     } catch (err) {
-      toast.error(err?.data?.message || err.error);
+      setRegisterError(err?.data?.message || err.error);
+      setTimeout(() => setRegisterError(''), 10000);
     }
   };
 
   return (
     <div className='mt-5'>
+      {registerError && (
+        <Message
+          variant='Error'
+          noLabel={true}
+          text={registerError}
+          small={true}
+        />
+      )}
       <form onSubmit={onSubmit} className='w-full'>
         <div className='flex flex-col space-y-3'>
           <input
@@ -321,6 +344,7 @@ const SignUpForm = () => {
             className='w-full focus:outline-none placeholder:text-black pb-1 mt-3 pr-1'
           />
           <button
+            type='button'
             className='mt-1.5'
             onClick={() => setShowPassword((prev) => !prev)}
           >

@@ -72,7 +72,7 @@ const UserEditScreen = () => {
   };
 
   return (
-    <div className='container mx-auto px-6 md:max-w-3xl lg:max-w-6xl lg:px-28 xl:px-6'>
+    <>
       <div className='mt-8 lg:mt-12'>
         <Link
           to='/admin/userList'
@@ -166,7 +166,7 @@ const UserEditScreen = () => {
           </div>
         </form>
       )}
-    </div>
+    </>
   );
 };
 export default UserEditScreen;

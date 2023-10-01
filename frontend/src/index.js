@@ -13,12 +13,18 @@ import store from './store';
 import './index.css';
 import App from './App';
 import PrivateRoute from './components/PrivateRoute';
+import SellRoute from './components/SellRoute';
 import AdminRoute from './components/AdminRoute';
 import HomeScreen from './screens/HomeScreen';
 import ProductScreen from './screens/ProductScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import ProfileBuyingScreen from './screens/ProfileBuyingScreen';
+import ProfileSellingScreen from './screens/ProfileSellingScreen';
 import FavoritesScreen from './screens/FavoritesScreen';
 import BuyScreen from './screens/BuyScreen';
+import PlaceBidScreen from './screens/PlaceBidScreen';
+import SellScreen from './screens/SellScreen';
+import PlaceAskScreen from './screens/PlaceAskScreen';
 import ShippingScreen from './screens/ShippingScreen';
 import OrderScreen from './screens/OrderScreen';
 import OrderListScreen from './screens/admin/OrderListScreen';
@@ -44,8 +50,16 @@ const router = createBrowserRouter(
 
       <Route path='' element={<PrivateRoute />}>
         <Route path='/buy/:productId/shipping' element={<ShippingScreen />} />
+        <Route path='/buy/:productId/placeBid' element={<PlaceBidScreen />} />
         <Route path='/order/:id' element={<OrderScreen />} />
         <Route path='/profile' element={<ProfileScreen />} />
+        <Route path='/profile/buying' element={<ProfileBuyingScreen />} />
+        <Route path='/profile/selling' element={<ProfileSellingScreen />} />
+      </Route>
+
+      <Route path='' element={<SellRoute />}>
+        <Route path='/sell/:productId' element={<SellScreen />} />
+        <Route path='/sell/:productId/placeAsk' element={<PlaceAskScreen />} />
       </Route>
 
       <Route path='' element={<AdminRoute />}>

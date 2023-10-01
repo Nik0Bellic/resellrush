@@ -5,7 +5,7 @@ const FavoritesScreen = () => {
   const { favoriteItems } = useSelector((state) => state.favorites);
 
   return (
-    <div className='container mx-auto px-6 lg:px-28 my-7'>
+    <>
       <h1 className='font-bold text-2xl mb-1'>Favorites</h1>
       {favoriteItems.length === 0 ? (
         <p>Add items to your favorites and they'll appear here</p>
@@ -22,7 +22,7 @@ const FavoritesScreen = () => {
           </div>
         </>
       )}
-    </div>
+    </>
   );
 };
 export default FavoritesScreen;

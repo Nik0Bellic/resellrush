@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import SizesPopup from '../components/SizesPopup';
@@ -6,28 +6,26 @@ import Loader from '../components/Loader';
 import Message from '../components/Message';
 import { useGetProductDetailsQuery } from '../slices/productsApiSlice';
 import { setAuthModalActive } from '../slices/authSlice';
-import { createBid } from '../slices/bidSlice';
-import { addToOrder } from '../slices/orderSlice';
+import { createAsk } from '../slices/askSlice';
 import { setSizesModalActive } from '../slices/sizeSlice';
 
-const BuyScreen = () => {
+const SellScreen = () => {
   const [noSizeMessage, setNoSizeMessage] = useState(false);
   const [nonClickable, setNonClickable] = useState(false);
 
-  const [noAsksForSize, setNoAsksForSize] = useState(false);
+  const [noBidsForSize, setNoBidsForSize] = useState(false);
   const [noOffersMessage, setNoOffersMessage] = useState('');
 
-  const [maxBidForSize, setMaxBidForSize] = useState(null);
   const [sizes, setSizes] = useState([]);
   const { selectedSize } = useSelector((state) => state.size);
 
   const [expOpen, setExpOpen] = useState(false);
 
-  const [isBid, setIsBid] = useState(false);
+  const [isAsk, setIsAsk] = useState(true);
 
-  const [bidPrice, setBidPrice] = useState('');
-  const [bidExpiration, setBidExpiration] = useState(30);
-  const [invalidBidMessage, setInvalidBidMessage] = useState('');
+  const [askPrice, setAskPrice] = useState('');
+  const [askExpiration, setAskExpiration] = useState(30);
+  const [invalidAskMessage, setInvalidAskMessage] = useState('');
 
   const [discountCode, setDiscountCode] = useState('');
 
@@ -35,9 +33,7 @@ const BuyScreen = () => {
   const dispatch = useDispatch();
   const location = useLocation();
 
-  const queryParamsRef = useRef(null);
-
-  const [purchasePrice, setPurchasePrice] = useState(null);
+  const [salePrice, setSalePrice] = useState(null);
 
   const { productId } = useParams();
 
@@ -53,45 +49,38 @@ const BuyScreen = () => {
       const lowestAskForSize = sizeObj?.asks[0]?.price;
       const highestBidForSize = sizeObj?.bids[0]?.price;
 
-      setMaxBidForSize(highestBidForSize);
-
       if (!lowestAskForSize && !highestBidForSize) {
-        setIsBid(true);
-        setNoAsksForSize(true);
+        setIsAsk(true);
+        setNoBidsForSize(true);
         setNoOffersMessage('No Asks Or Bids For This Size');
-        setPurchasePrice(null);
+        setSalePrice(null);
       } else if (!lowestAskForSize) {
-        setIsBid(true);
-        setNoAsksForSize(true);
+        setIsAsk(false);
+        setNoBidsForSize(false);
         setNoOffersMessage('No Asks For This Size');
-        setPurchasePrice(null);
+        setSalePrice(highestBidForSize);
       } else if (!highestBidForSize) {
-        setIsBid(false || queryParamsRef.current.get('defaultBid'));
-        setNoAsksForSize(false);
-        setNoOffersMessage('');
-        setPurchasePrice(lowestAskForSize);
+        setIsAsk(true);
+        setNoBidsForSize(true);
+        setNoOffersMessage('No Bids For This Size');
+        setSalePrice(null);
       } else {
-        setIsBid(false || queryParamsRef.current.get('defaultBid'));
-        setNoAsksForSize(false);
+        setIsAsk(false);
+        setNoBidsForSize(false);
         setNoOffersMessage('');
-        setPurchasePrice(lowestAskForSize);
+        setSalePrice(highestBidForSize);
       }
     },
     [product]
   );
 
   useEffect(() => {
-    queryParamsRef.current = new URLSearchParams(location.search);
-    if (!queryParamsRef.current.get('size')) {
+    const queryParams = new URLSearchParams(location.search);
+    if (!queryParams.get('size')) {
       dispatch(setSizesModalActive(true));
       setNonClickable(true);
     } else {
       setNonClickable(false);
-      if (queryParamsRef.current.get('defaultBid')) {
-        setIsBid(true);
-      } else {
-        setIsBid(false);
-      }
     }
 
     if (product) {
@@ -113,28 +102,29 @@ const BuyScreen = () => {
     } else if (!userInfo) {
       dispatch(setAuthModalActive(true));
     } else {
-      if (isBid) {
-        if (bidPrice === '' || bidPrice < 25) {
-          setInvalidBidMessage(
-            'Bid price must be greater than or equal to $25'
+      if (isAsk) {
+        if (askPrice === '' || askPrice < 25) {
+          setInvalidAskMessage(
+            'Ask price must be greater than or equal to $25'
           );
-          setTimeout(() => setInvalidBidMessage(''), 10000);
+          setTimeout(() => setInvalidAskMessage(''), 10000);
         } else {
           dispatch(
-            createBid({
-              buyItem: product,
+            createAsk({
+              sellItem: product,
               size: selectedSize.replace(',', '.'),
-              type: 'bid',
-              expiration: bidExpiration,
-              bidPrice,
+              type: 'ask',
+              expiration: askExpiration,
+              askPrice,
             })
           );
-          navigate(`/buy/${productId}/placeBid`);
+          navigate(`/sell/${productId}/placeAsk`);
         }
-      } else {
-        dispatch(addToOrder({ ...product, size: selectedSize, purchasePrice }));
-        navigate(`/buy/${productId}/shipping`);
       }
+      // else {
+      //   dispatch(createAsk({ ...product, size, askPrice: salePrice }));
+      //   navigate(`/sell/${productId}/placeAsk`);
+      // }
     }
   };
 
@@ -214,15 +204,11 @@ const BuyScreen = () => {
                   </button>
                 </div>
                 <div className='flex flex-col justify-between mt-3 text-sm sm:text-base lg:text-lg'>
-                  {isBid &&
-                    (!maxBidForSize ||
-                      (bidPrice &&
-                        maxBidForSize &&
-                        bidPrice > maxBidForSize)) && (
-                      <div className='w-full text-center font-medium mb-4 text-strongYellow'>
-                        You are about to be the highest bidder!
-                      </div>
-                    )}
+                  {noBidsForSize && (
+                    <div className='w-full text-center font-semibold mb-4'>
+                      Retail Price ${product.retailPrice}
+                    </div>
+                  )}
                   {noOffersMessage && (
                     <Message
                       variant='info'
@@ -234,71 +220,71 @@ const BuyScreen = () => {
                   <div className='flex justify-between'>
                     <input
                       type='radio'
-                      id='purchase'
-                      name='buyType'
-                      onClick={() => setIsBid(false)}
+                      id='sale'
+                      name='sellType'
+                      onClick={() => setIsAsk(false)}
                       className='peer hidden'
-                      disabled={noAsksForSize}
+                      disabled={noBidsForSize}
                     />
                     <label
-                      htmlFor='purchase'
+                      htmlFor='sale'
                       className={`cursor-pointer border-2 border-black rounded-full py-2 px-2 sm:px-5 ${
-                        !isBid
+                        !isAsk
                           ? 'bg-strongYellow'
-                          : !noAsksForSize &&
+                          : !noBidsForSize &&
                             'hover:border-strongYellow hover:scale-105 duration-200'
                       } ${
-                        noAsksForSize &&
+                        noBidsForSize &&
                         'peer-disabled:border-gray-300 peer-disabled:text-gray-300 peer-disabled:cursor-default'
                       }`}
                     >
-                      Buy Now{' '}
-                      <span className={`${noAsksForSize && 'hidden'}`}>
-                        ${purchasePrice}
+                      Sell Now{' '}
+                      <span className={`${noBidsForSize && 'hidden'}`}>
+                        ${salePrice}
                       </span>
                     </label>
                     <input
                       type='radio'
-                      id='bid'
-                      name='buyType'
-                      onClick={() => setIsBid(true)}
+                      id='ask'
+                      name='sellType'
+                      onClick={() => setIsAsk(true)}
                       className='peer hidden'
                     />
                     <label
-                      htmlFor='bid'
+                      htmlFor='ask'
                       className={`cursor-pointer border-2 border-black rounded-full py-2 px-2 sm:px-5 ${
-                        isBid
+                        isAsk
                           ? 'bg-strongYellow'
-                          : !noAsksForSize &&
+                          : !noBidsForSize &&
                             'hover:border-strongYellow hover:scale-105 duration-200'
                       }`}
                     >
-                      Place bid
+                      Place ask
                     </label>
                   </div>
                 </div>
-                {isBid ? (
+                {isAsk ? (
                   <>
-                    {invalidBidMessage && (
+                    {invalidAskMessage && (
                       <Message
                         variant='Warning'
-                        text={invalidBidMessage}
+                        text={invalidAskMessage}
                         small={true}
                         noLabel={true}
                       />
                     )}
                     <div className='flex border-2 border-black rounded-full text-sm sm:text-base lg:text-lg'>
                       <div className='px-3 sm:px-5 py-2 whitespace-nowrap'>
-                        Place Bid
+                        Place Ask
                       </div>
                       <div className='pl-2 sm:pl-3 flex w-full items-center border-l-2 border-black rounded-full rounded-l-none'>
                         <span className='font-semibold text-lg'>$</span>
                         <input
                           type='number'
                           name='q'
-                          placeholder='Enter Bid'
-                          onChange={(e) => setBidPrice(Number(e.target.value))}
-                          value={bidPrice}
+                          placeholder='Enter Ask'
+                          onChange={(e) => setAskPrice(Number(e.target.value))}
+                          value={askPrice}
                           className='w-full mr-5 pl-1.5 focus:outline-none'
                           required={true}
                         />
@@ -310,9 +296,9 @@ const BuyScreen = () => {
                         onClick={() => setExpOpen((current) => !current)}
                         className='relative z-20 flex justify-between items-center border-2 border-black rounded-full py-2 px-3 sm:px-5 w-full text-sm sm:text-base lg:text-lg'
                       >
-                        <div>Bid expiration</div>
+                        <div>Ask expiration</div>
                         <div className='flex font-semibold space-x-1 md:space-x-2 items-center'>
-                          <div>{bidExpiration} Days</div>
+                          <div>{askExpiration} Days</div>
                           <div>
                             <svg
                               xmlns='http://www.w3.org/2000/svg'
@@ -342,15 +328,15 @@ const BuyScreen = () => {
                                     id={`${exp}`}
                                     name='expiration'
                                     required={true}
-                                    onClick={() => setBidExpiration(exp)}
+                                    onClick={() => setAskExpiration(exp)}
                                     className='peer hidden'
                                   />
                                   <label
                                     htmlFor={`${exp}`}
                                     className={`inline-flex cursor-pointer text-sm md:text-base select-none items-center justify-center outline-none border-2 border-black rounded-full py-1.5 md:py-2 px-3 md:px-4 peer-hover:opacity-100 peer-hover:border-strongYellow peer-hover:scale-110 duration-200 ${
-                                      bidExpiration && bidExpiration !== exp
+                                      askExpiration && askExpiration !== exp
                                         ? 'opacity-50'
-                                        : bidExpiration === exp &&
+                                        : askExpiration === exp &&
                                           'bg-strongYellow'
                                     }`}
                                   >
@@ -375,8 +361,8 @@ const BuyScreen = () => {
                     />
 
                     <div className='flex justify-between items-center text-sm lg:text-lg border-b-2 border-black pb-1 mx-0.5'>
-                      <div>Item Price:</div>
-                      <div className='font-bold ml-2'>${purchasePrice}</div>
+                      <div>Your Sale Price:</div>
+                      <div className='font-bold ml-2'>${salePrice}</div>
                     </div>
                   </>
                 )}
@@ -400,7 +386,7 @@ const BuyScreen = () => {
           <SizesPopup
             sizes={sizes}
             handleSizeChoice={handleSizeChoice}
-            type='bid'
+            type='ask'
             nonClickable={nonClickable}
           />
         </>
@@ -408,4 +394,4 @@ const BuyScreen = () => {
     </>
   );
 };
-export default BuyScreen;
+export default SellScreen;

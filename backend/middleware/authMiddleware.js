@@ -25,6 +25,16 @@ const protect = asyncHandler(async (req, res, next) => {
   }
 });
 
+// Seller middleware
+const seller = (req, res, next) => {
+  if (req.user && req.user.isSeller) {
+    next();
+  } else {
+    res.status(401);
+    throw Error('Not authorized as seller');
+  }
+};
+
 // Admin middleware
 const admin = (req, res, next) => {
   if (req.user && req.user.isAdmin) {
@@ -35,4 +45,4 @@ const admin = (req, res, next) => {
   }
 };
 
-export { protect, admin };
+export { protect, seller, admin };

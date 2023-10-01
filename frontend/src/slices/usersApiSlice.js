@@ -58,6 +58,32 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Users'],
     }),
+    updateShippingInfo: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/shipping`,
+        method: 'PUT',
+        body: data,
+      }),
+    }),
+    updatePayMethod: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/payMethod`,
+        method: 'PUT',
+        body: data,
+      }),
+    }),
+    getMyCurrentAsks: builder.query({
+      query: () => ({
+        url: `${USERS_URL}/asks/mine`,
+      }),
+      keepUnusedDataFor: 5,
+    }),
+    getMyCurrentBids: builder.query({
+      query: () => ({
+        url: `${USERS_URL}/bids/mine`,
+      }),
+      keepUnusedDataFor: 5,
+    }),
   }),
 });
 
@@ -70,4 +96,8 @@ export const {
   useDeleteUserMutation,
   useGetUserDetailsQuery,
   useUpdateUserMutation,
+  useUpdateShippingInfoMutation,
+  useUpdatePayMethodMutation,
+  useGetMyCurrentAsksQuery,
+  useGetMyCurrentBidsQuery,
 } = usersApiSlice;

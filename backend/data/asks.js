@@ -8,7 +8,7 @@ const asks = [
     price: 200,
   },
   {
-    size: 10.5,
+    size: '10,5',
     price: 300,
   },
   {

@@ -1,61 +1,60 @@
 import { Link } from 'react-router-dom';
-import Loader from '../../components/Loader';
-import Message from '../../components/Message';
-import { FaArrowRightLong } from 'react-icons/fa6';
-import { useGetOrdersQuery } from '../../slices/ordersApiSlice';
 import {
   createColumnHelper,
   flexRender,
-  getCoreRowModel,
   useReactTable,
+  getCoreRowModel,
 } from '@tanstack/react-table';
+import Loader from '../components/Loader';
+import Message from '../components/Message';
+import { useGetMyOrdersQuery } from '../slices/ordersApiSlice';
+import { FaArrowRightLong } from 'react-icons/fa6';
 
-const columnHelper = createColumnHelper();
+const PendingUserBidsTable = () => {
+  const { data: orders, isLoading, error } = useGetMyOrdersQuery();
 
-const columns = [
-  columnHelper.accessor((row) => row._id, {
-    id: '_id',
-    header: 'ID',
-    cell: (info) => info.getValue(),
-  }),
-  columnHelper.accessor('user', {
-    header: 'User',
-    cell: (info) => (
-      <div>
-        {info.getValue()?.firstName} {info.getValue()?.lastName}
-      </div>
-    ),
-  }),
-  columnHelper.accessor((row) => row.createdAt, {
-    id: 'createdAt',
-    header: 'Date',
-    cell: (info) => info.getValue().substring(0, 10),
-  }),
-  columnHelper.accessor((row) => row.purchasePrice, {
-    id: 'price',
-    header: 'Price',
-    cell: (info) => <div>${info.getValue()}</div>,
-  }),
-  columnHelper.accessor((row) => row.status, {
-    id: 'status',
-    header: 'Status',
-    cell: (info) => (
-      <div className='flex flex-col justify-between items-end h-24 py-2'>
-        <div>{info.getValue()}</div>
-        <Link
-          className='flex items-center hover:text-strongYellow'
-          to={`/order/${info.row.original._id}`}
-        >
-          <span>Details</span>
-          <FaArrowRightLong className='ml-2 hidden sm:inline' />
-        </Link>
-      </div>
-    ),
-  }),
-];
+  const columnHelper = createColumnHelper();
 
-const OrderListScreen = () => {
-  const { data: orders, isLoading, error } = useGetOrdersQuery();
+  const columns = [
+    columnHelper.accessor((row) => row.orderItem?.image, {
+      id: 'image',
+      cell: (info) => (
+        <img src={info.getValue()} alt='Order Item' width='100' />
+      ),
+      header: '',
+    }),
+    columnHelper.accessor('orderItem', {
+      header: 'Item',
+      cell: (info) => (
+        <div>
+          <div className='text-sm opacity-75'>{info.getValue()?.name}</div>
+          <div className='font-semibold'>{info.getValue()?.color}</div>
+          <div>Size: {info.getValue()?.size}</div>
+        </div>
+      ),
+    }),
+    columnHelper.accessor((row) => row.purchasePrice, {
+      id: 'price',
+      header: 'Price',
+      cell: (info) => <div className='font-bold'>${info.getValue()}</div>,
+    }),
+    columnHelper.accessor((row) => row.status, {
+      id: 'status',
+      header: 'Status',
+      cell: (info) => (
+        <div className='flex flex-col justify-between items-end h-24 py-2'>
+          <div>{info.getValue()}</div>
+          <Link
+            className='flex items-center hover:text-strongYellow'
+            to={`/order/${info.row.original._id}`}
+          >
+            <span>Details</span>
+            <FaArrowRightLong className='ml-2 hidden sm:inline' />
+          </Link>
+        </div>
+      ),
+    }),
+  ];
 
   const table = useReactTable({
     data: orders,
@@ -65,13 +64,14 @@ const OrderListScreen = () => {
 
   return (
     <>
-      <div className='mt-8 font-bold text-xl sm:text-2xl lg:text-3xl'>
-        All Orders
-      </div>
       {isLoading ? (
         <Loader />
       ) : error ? (
         <Message variant='Error' text={error?.data?.message || error.error} />
+      ) : orders.length === 0 ? (
+        <div className='mt-8 lg:mt-12 text-xl flex w-full justify-center'>
+          You have no pending bids
+        </div>
       ) : (
         <div className='mt-8'>
           <table className='min-w-full bg-transparent'>
@@ -109,14 +109,7 @@ const OrderListScreen = () => {
                   }`}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <td
-                      key={cell.id}
-                      className={`py-2 px-1 sm:pl-0 border-black border-r-2 sm:border-none ${
-                        cell.column.id === '_id'
-                          ? 'pl-0'
-                          : cell.column.id === 'status' && 'pr-0 border-none'
-                      }`}
-                    >
+                    <td key={cell.id} className='py-2'>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -132,4 +125,5 @@ const OrderListScreen = () => {
     </>
   );
 };
-export default OrderListScreen;
+
+export default PendingUserBidsTable;

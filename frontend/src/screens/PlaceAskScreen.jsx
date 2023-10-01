@@ -2,45 +2,63 @@ import { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
+import Loader from '../components/Loader';
 // import countries from 'i18n-iso-countries';
 // import enLocate from 'i18n-iso-countries/langs/en.json';
-import { saveShippingInfo, savePaymentMethod } from '../slices/orderSlice';
-import Loader from '../components/Loader';
-import { useCreateOrderMutation } from '../slices/ordersApiSlice';
+import {
+  useUpdateShippingInfoMutation,
+  useUpdatePayMethodMutation,
+} from '../slices/usersApiSlice';
+import { usePlaceAskMutation } from '../slices/productsApiSlice';
+import { setCredentials } from '../slices/authSlice';
 
-const ShippingScreen = () => {
+const PlaceAskScreen = () => {
   const dispatch = useDispatch();
 
-  const order = useSelector((state) => state.order);
-  const {
-    orderItem,
-    shippingInfo,
-    purchasePrice,
-    processingFee,
-    shippingPrice,
-    totalPrice,
-  } = order;
+  const { userInfo } = useSelector((state) => state.auth);
 
-  const [isPickup, setIsPickup] = useState(false);
+  const ask = useSelector((state) => state.ask);
+  const {
+    sellItem,
+    size,
+    type,
+    expiration,
+    askPrice,
+    transactionFee,
+    paymentProcessingFee,
+    shippingFee,
+    totalPayout,
+  } = ask;
+
+  const [updateShippingInfo] = useUpdateShippingInfoMutation();
+  const [updatePayMethod] = useUpdatePayMethodMutation();
+
+  const [isInPerson, setIsInPerson] = useState(false);
 
   const [shippingService, setShippingService] = useState(
-    shippingInfo?.shippingService || ''
+    userInfo.shippingInfo?.shippingService || ''
   );
-  const [firstName, setFirstName] = useState(shippingInfo?.firstName || '');
-  const [lastName, setLastName] = useState(shippingInfo?.lastName || '');
-  const [country, setCountry] = useState(shippingInfo?.country || '');
-  const [city, setCity] = useState(shippingInfo?.city || '');
-  const [region, setRegion] = useState(shippingInfo?.region || '');
-  const [address, setAddress] = useState(shippingInfo?.address || '');
-  const [postalCode, setPostalCode] = useState(shippingInfo?.postalCode || '');
-  const [orderComments, setOrderComments] = useState(
-    shippingInfo?.orderComments || ''
+  const [firstName, setFirstName] = useState(
+    userInfo.shippingInfo?.firstName || ''
   );
-  const [paymentMethod, setPaymentMethod] = useState('PayPal');
+  const [lastName, setLastName] = useState(
+    userInfo.shippingInfo?.lastName || ''
+  );
+  const [country, setCountry] = useState(userInfo.shippingInfo?.country || '');
+  const [city, setCity] = useState(userInfo.shippingInfo?.city || '');
+  const [region, setRegion] = useState(userInfo.shippingInfo?.region || '');
+  const [address, setAddress] = useState(userInfo.shippingInfo?.address || '');
+  const [postalCode, setPostalCode] = useState(
+    userInfo.shippingInfo?.postalCode || ''
+  );
+  const [askComments, setAskComments] = useState('');
+  const [payoutMethod, setPayoutMethod] = useState(
+    userInfo.payMethod || 'PayPal'
+  );
 
   const [noShippingService, setNoShippingService] = useState(false);
   const [noCountry, setNoCountry] = useState(false);
-  const [noPaymentMethod, setNoPaymentMethod] = useState(false);
+  const [noPayoutMethod, setNoPayoutMethod] = useState(false);
 
   const [selectOpen, setSelectOpen] = useState(false);
 
@@ -79,8 +97,8 @@ const ShippingScreen = () => {
     },
   ];
 
-  const [createOrder, { isLoading, error }] = useCreateOrderMutation();
-  const [orderErr, setOrderErr] = useState('');
+  const [placeAsk, { isLoading, error }] = usePlaceAskMutation();
+  const [placeAskError, setPlaceAskError] = useState('');
 
   const navigate = useNavigate();
 
@@ -92,68 +110,90 @@ const ShippingScreen = () => {
     } else if (!country) {
       setNoCountry(true);
       setTimeout(() => setNoCountry(false), 10000);
-    } else if (!paymentMethod) {
-      setNoPaymentMethod(true);
-      setTimeout(() => setNoPaymentMethod(false), 10000);
+    } else if (!payoutMethod) {
+      setNoPayoutMethod(true);
+      setTimeout(() => setNoPayoutMethod(false), 10000);
     } else {
-      dispatch(
-        saveShippingInfo({
-          shippingService,
-          firstName,
-          lastName,
-          country,
-          city,
-          region,
-          address,
-          postalCode,
-          orderComments,
-        })
-      );
-      dispatch(savePaymentMethod(paymentMethod));
+      const returnShippingInfo = {
+        shippingService,
+        firstName,
+        lastName,
+        country,
+        city,
+        region,
+        address,
+        postalCode,
+      };
+      if (
+        returnShippingInfo !== userInfo.shippingInfo ||
+        payoutMethod !== userInfo.payMethod
+      ) {
+        const updatedUserInfo = {
+          _id: userInfo._id,
+          firstName: userInfo.firstName,
+          lastName: userInfo.firstName,
+          email: userInfo.email,
+          shippingInfo: returnShippingInfo,
+          payMethod: payoutMethod,
+          isSeller: userInfo.isSeller,
+          isAdmin: userInfo.isAdmin,
+        };
+        dispatch(setCredentials(updatedUserInfo));
 
-      try {
-        const res = await createOrder({
-          orderItem,
-          shippingInfo,
-          paymentMethod,
-          purchasePrice,
-          processingFee,
-          shippingPrice,
-          totalPrice,
-        }).unwrap();
-        navigate(`/order/${res._id}`);
-      } catch (err) {
-        setOrderErr(err?.data?.message || err.error);
-        setTimeout(() => setOrderErr(false), 10000);
+        if (returnShippingInfo !== userInfo.shippingInfo) {
+          updateShippingInfo(returnShippingInfo);
+        }
+        if (payoutMethod !== userInfo.payMethod) {
+          updatePayMethod({ payMethod: payoutMethod });
+        }
+      }
+
+      if (type === 'sale') {
+      } else if (type === 'ask') {
+        try {
+          await placeAsk({
+            sellItem,
+            seller: userInfo,
+            size: size.replace('.', ','),
+            askPrice,
+            expiration,
+            returnShippingInfo,
+            payoutMethod,
+          });
+          navigate('/profile/selling', {
+            state: { message: 'Ask placed successfully!' },
+          });
+        } catch (err) {
+          setPlaceAskError(err?.data?.message || err.error);
+          setTimeout(() => setPlaceAskError(false), 10000);
+        }
       }
     }
   };
 
   return (
     <>
-      {!orderItem.size ? (
-        <Navigate to={`/buy/${orderItem.productIdentifier}`} replace />
+      {!size || !type ? (
+        <Navigate to={`/sell/${sellItem.productIdentifier}`} replace />
       ) : (
         <>
           <div className='flex justify-between my-8 lg:my-12'>
             <div>
-              <div className='text-xl font-semibold'>{orderItem.name}</div>
-              <div className='opacity-50'>{orderItem.color}</div>
+              <div className='text-xl font-semibold'>{sellItem.name}</div>
+              <div className='opacity-50'>{sellItem.color}</div>
             </div>
             <div className='flex flex-col'>
               <div className='opacity-50 text-sm text-right'>
                 Selected Size:
               </div>
-              <div className='font-bold text-3xl md:text-4xl'>
-                US M {orderItem.size}
-              </div>
+              <div className='font-bold text-3xl md:text-4xl'>US M {size}</div>
             </div>
           </div>
           <div className='mt-10 grid grid-cols-2 gap-5 sm:gap-7 lg:gap-20'>
             <div className='mt-3 max-w-md'>
               <img
-                src={orderItem.image}
-                alt={orderItem.name + ' ' + orderItem.color}
+                src={sellItem.image}
+                alt={sellItem.name + ' ' + sellItem.color}
               />
             </div>
             <div className='flex flex-col items-end w-full'>
@@ -166,13 +206,13 @@ const ShippingScreen = () => {
                     type='radio'
                     id='shipping'
                     name='shippingType'
-                    onClick={() => setIsPickup(false)}
+                    onClick={() => setIsInPerson(false)}
                     className='peer hidden'
                   />
                   <label
                     htmlFor='shipping'
                     className={`cursor-pointer py-2.5 px-5 sm:px-8 md:px-10 absolute ${
-                      !isPickup &&
+                      !isInPerson &&
                       'border-2 border-black bg-strongYellow rounded-full -ml-0.5 -mt-0.5'
                     }`}
                   >
@@ -180,24 +220,26 @@ const ShippingScreen = () => {
                   </label>
                   <input
                     type='radio'
-                    id='pickup'
+                    id='inPerson'
                     name='shippingType'
-                    onClick={() => setIsPickup(true)}
+                    onClick={() => setIsInPerson(true)}
                     className='peer hidden'
                   />
                   <label
-                    htmlFor='pickup'
+                    htmlFor='inPerson'
                     className={`cursor-pointer py-2.5 px-5 sm:px-8 md:px-10 absolute right-0 ${
-                      isPickup &&
+                      isInPerson &&
                       'border-2 border-black bg-strongYellow rounded-full -mr-0.5 -mt-0.5'
                     }`}
                   >
-                    Pickup
+                    In-Person
                   </label>
                 </div>
-                {!isPickup ? (
+                {!isInPerson ? (
                   <>
-                    <div className='font-bold text-xl'>Shipping Info</div>
+                    <div className='font-bold text-xl'>
+                      Return Shipping Info
+                    </div>
                     <div className='flex flex-col'>
                       {noShippingService && (
                         <Message
@@ -364,9 +406,9 @@ const ShippingScreen = () => {
                         className='col-span-2 sm:col-span-1 border-b-2 border-black text-sm sm:text-base lg:text-lg pb-1 w-full focus:outline-none'
                       />
                       <textarea
-                        placeholder='Order Comments'
-                        onChange={(e) => setOrderComments(e.target.value)}
-                        value={orderComments}
+                        placeholder='Comments'
+                        onChange={(e) => setAskComments(e.target.value)}
+                        value={askComments}
                         rows='3'
                         className='col-span-2 border-2 rounded-md border-black text-sm sm:text-base lg:text-lg w-full p-1.5 focus:outline-none'
                       />
@@ -378,26 +420,32 @@ const ShippingScreen = () => {
 
                 <div className='pt-2 lg:pt-3 flex flex-col space-y-3 lg:space-y-4 w-full sm:w-60 lg:w-72'>
                   <div className='flex justify-between items-center text-sm lg:text-lg border-b-2 border-black pb-1 mx-0.5'>
-                    <div>Your Purchase Price:</div>
-                    <div className='font-bold ml-2'>${purchasePrice}</div>
+                    <div>Your Sale Price:</div>
+                    <div className='font-bold ml-2'>${askPrice.toFixed(2)}</div>
                   </div>
                   <div className='flex justify-between items-center text-sm lg:text-lg border-b-2 border-black pb-1 mx-0.5'>
-                    <div>Processing Fee:</div>
-                    <div className='font-bold ml-2'>${processingFee}</div>
+                    <div>Transcation Fee:</div>
+                    <div className='font-bold ml-2'>-${transactionFee}</div>
+                  </div>
+                  <div className='flex justify-between items-center text-sm lg:text-lg border-b-2 border-black pb-1 mx-0.5'>
+                    <div>Payment Processing Fee:</div>
+                    <div className='font-bold ml-2'>
+                      -${paymentProcessingFee}
+                    </div>
                   </div>
                   <div className='flex justify-between items-center text-sm lg:text-lg border-b-2 border-black pb-1 mx-0.5'>
                     <div>Shipping:</div>
-                    <div className='font-bold ml-2'>${shippingPrice}</div>
+                    <div className='font-bold ml-2'>-${shippingFee}</div>
                   </div>
                   <div className='flex justify-between items-center text-sm lg:text-lg border-b-2 border-black pb-1 mx-0.5'>
-                    <div>Total:</div>
-                    <div className='font-bold ml-2'>${totalPrice}</div>
+                    <div>Total Payout:</div>
+                    <div className='font-bold ml-2'>${totalPayout}</div>
                   </div>
                 </div>
 
-                <div className='font-bold text-xl sm:mt-4'>Payment Method</div>
+                <div className='font-bold text-xl sm:mt-4'>Payout Method</div>
                 <div className='flex flex-col'>
-                  {noPaymentMethod && (
+                  {noPayoutMethod && (
                     <Message
                       variant='Warning'
                       text='Please Select Method'
@@ -410,10 +458,10 @@ const ShippingScreen = () => {
                       PayPal (and Credit Card)
                       <input
                         type='radio'
-                        name='payment'
+                        name='payout'
                         id='PayPal'
                         checked
-                        onChange={(e) => setPaymentMethod(e.target.id)}
+                        onChange={(e) => setPayoutMethod(e.target.id)}
                         className='absolute opacity-0 cursor-pointer h-0 w-0 peer'
                       />
                       <span className='absolute mt-1 top-0 left-0 h-4 w-4 lg:h-5 lg:w-5 border-2 border-black rounded-md peer-hover:border-strongYellow peer-checked:border-black peer-checked:bg-strongYellow'></span>
@@ -429,23 +477,24 @@ const ShippingScreen = () => {
                   />
                 )}
 
-                {orderErr && (
-                  <Message variant='Error' text={orderErr} small={true} />
+                {placeAskError && (
+                  <Message variant='Error' text={placeAskError} small={true} />
                 )}
 
                 <div className='pt-4 lg:pt-6 w-full flex justify-between sm:text-lg lg:text-xl'>
                   <Link
-                    to={`/buy/${orderItem.productIdentifier}`}
+                    to={`/sell/${sellItem.productIdentifier}`}
                     className='border-2 border-black text-center px-3 sm:px-5 lg:px-8 xl:px-10 py-1.5 sm:py-2 xl:py-3 rounded-full hover:scale-110 hover:border-strongYellow active:bg-strongYellow active:border-black duration-200'
                   >
                     Go Back
                   </Link>
                   <button
+                    disabled={isLoading}
                     role='link'
                     type='submit'
                     className='border-2 text-center px-3 sm:px-5 lg:px-8 xl:px-10 py-1.5 sm:py-2 xl:py-3 rounded-full hover:scale-110 border-strongYellow active:bg-strongYellow active:border-black duration-200'
                   >
-                    Checkout
+                    Place Ask
                   </button>
                 </div>
 
@@ -458,4 +507,5 @@ const ShippingScreen = () => {
     </>
   );
 };
-export default ShippingScreen;
+
+export default PlaceAskScreen;

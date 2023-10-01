@@ -90,7 +90,9 @@ const ProductCarousel = () => {
               </div>
               <div className='flex flex-col'>
                 <div className='opacity-50 text-sm text-right'>Last Sale:</div>
-                <div className='font-bold text-4xl'>${product.lastSale}</div>
+                <div className='font-bold text-4xl'>
+                  ${product.productLastSale}
+                </div>
               </div>
             </div>
           </Link>

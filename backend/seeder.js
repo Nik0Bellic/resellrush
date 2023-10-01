@@ -1,4 +1,5 @@
-import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+import dotenv, { config } from 'dotenv';
 import colors from 'colors';
 import users from './data/users.js';
 import products from './data/products.js';
@@ -23,78 +24,113 @@ const importData = async () => {
 
     const adminUser = createdUsers[0]._id;
 
-    const askDict = {};
-    const bidDict = {};
-
-    asks.map((offer) => {
-      const randomUser =
-        createdUsers[Math.floor(Math.random() * createdUsers.length)];
-      const randomProduct =
-        products[Math.floor(Math.random() * products.length)];
-
-      const productName = randomProduct.name;
-
-      if (!askDict[productName]) {
-        askDict[productName] = [];
-      }
-
-      askDict[productName].push({ ...offer, user: randomUser });
-
-      return { ...offer, user: randomUser };
-    });
-
-    bids.map((offer) => {
-      const randomUser =
-        createdUsers[Math.floor(Math.random() * createdUsers.length)];
-      const randomProduct =
-        products[Math.floor(Math.random() * products.length)];
-
-      const productName = randomProduct.name;
-
-      if (!bidDict[productName]) {
-        bidDict[productName] = [];
-      }
-
-      bidDict[productName].push({ ...offer, user: randomUser });
-
-      return { ...offer, user: randomUser };
-    });
-
     const sampleProducts = products.map((product) => {
       const productIdentifier = (product.name + ' ' + product.color)
         .toLowerCase()
         .replace(/\s+/g, '-')
         .replace(/[^a-z0-9-]+/g, '');
 
-      const askOffers = askDict[product.name] ? askDict[product.name] : [];
-      const bidOffers = bidDict[product.name] ? bidDict[product.name] : [];
+      const defaultSizes = [
+        3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5,
+        12, 12.5, 13, 14, 15, 16, 17,
+      ];
 
-      const sizesGroup = askOffers.reduce((acc, offer) => {
-        if (!acc[offer.size] || offer.price < acc[offer.size].price) {
-          acc[offer.size] = { size: offer.size, price: offer.price };
-        }
-        return acc;
-      }, {});
+      const sizesObj = {};
 
-      const availableSizes = Object.values(sizesGroup).sort(
-        (a, b) => a.size - b.size
-      );
-
-      // May be in presave
-      const lowestAsk = Math.min(...availableSizes.map((offer) => offer.price));
+      defaultSizes.forEach((size) => {
+        sizesObj[String(size).replace('.', ',')] = {
+          asks: [],
+          bids: [],
+        };
+      });
 
       return {
         ...product,
         user: adminUser,
         productIdentifier,
-        asks: [...askOffers],
-        bids: [...bidOffers],
-        availableSizes,
-        lowestAsk,
+        sizes: sizesObj,
       };
     });
 
-    await Product.insertMany(sampleProducts);
+    const createdProducts = await Product.insertMany(sampleProducts);
+
+    const shippingInfo = {
+      shippingService: 'DHL',
+      firstName: 'John',
+      lastName: 'Doe',
+      country: 'USA',
+      city: 'San Francisco',
+      region: 'California',
+      address: 'Main street 20',
+      postalCode: '94016',
+      shippingComments: '',
+    };
+
+    const payMethod = 'Paypal';
+
+    for (const ask of asks) {
+      const randomUser =
+        createdUsers[Math.floor(Math.random() * createdUsers.length)];
+      const randomProduct =
+        createdProducts[Math.floor(Math.random() * createdProducts.length)];
+
+      randomUser.currentAsks.push({
+        ...ask,
+        productIdentifier: randomProduct.productIdentifier,
+        returnShippingInfo: shippingInfo,
+        payoutMethod: payMethod,
+      });
+
+      const { size, ...askWithoutSize } = ask;
+
+      const productAsksBySize = randomProduct.sizes.get(String(size)).asks;
+      const position = productAsksBySize.findIndex(
+        (productAsk) => productAsk.price > askWithoutSize.price
+      );
+      if (position === -1) {
+        productAsksBySize.push({ ...askWithoutSize, user: randomUser._id });
+      } else {
+        productAsksBySize.splice(position, 0, {
+          ...askWithoutSize,
+          user: randomUser._id,
+        });
+      }
+
+      await randomUser.save();
+      await randomProduct.save();
+    }
+
+    for (const bid of bids) {
+      const randomUser =
+        createdUsers[Math.floor(Math.random() * createdUsers.length)];
+      const randomProduct =
+        createdProducts[Math.floor(Math.random() * createdProducts.length)];
+
+      randomUser.currentBids.push({
+        ...bid,
+        productIdentifier: randomProduct.productIdentifier,
+        shippingInfo,
+        paymentMethod: payMethod,
+      });
+
+      const { size, ...bidWithoutSize } = bid;
+
+      const productBidsBySize = randomProduct.sizes.get(String(size)).bids;
+      const position = productBidsBySize.findIndex(
+        (productBid) => productBid.price < bid.price
+      );
+      if (position === -1) {
+        productBidsBySize.push({ ...bidWithoutSize, user: randomUser._id });
+      } else {
+        productBidsBySize.splice(position, 0, {
+          ...bidWithoutSize,
+          user: randomUser._id,
+        });
+      }
+
+      await randomUser.save();
+      await randomProduct.save();
+    }
 
     console.log('Data Imported!'.green.inverse);
     process.exit();

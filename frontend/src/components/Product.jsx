@@ -28,7 +28,7 @@ const Product = ({ product }) => {
         </h3>
       </Link>
       <div className='flex justify-between'>
-        <h2 className='font-bold text-2xl'>${product.lowestAsk}</h2>
+        <h2 className='font-bold text-2xl'>${product.productLowestAsk}</h2>
         <button className='-mt-1' onClick={toggleFavoriteHandler}>
           <svg
             xmlns='http://www.w3.org/2000/svg'

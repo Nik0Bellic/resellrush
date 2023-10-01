@@ -1,7 +1,7 @@
 import asyncHandler from '../middleware/asyncHandler.js';
 import Order from '../models/orderModel.js';
 import Product from '../models/productModel.js';
-import { calcPrices } from '../utils/calcPrices.js';
+import { calcBidPrices } from '../utils/calcPrices.js';
 import { verifyPayPalPayment, checkIfNewTransaction } from '../utils/paypal.js';
 
 // @desc    Create new order
@@ -17,7 +17,12 @@ const createOrder = asyncHandler(async (req, res) => {
     throw new Error('Invalid order item');
   }
 
-  const lowestAsk = Math.min(...itemFromDB.asks.map((ask) => ask.price));
+  const asksForSize = itemFromDB.askSizes.filter(
+    (ask) => ask.size === itemFromClient.size
+  );
+
+  // May be in presave
+  const lowestAsk = Math.min(...asksForSize.map((ask) => ask.price));
 
   if (itemFromClient.purchasePrice !== lowestAsk) {
     res.status(400);
@@ -32,7 +37,7 @@ const createOrder = asyncHandler(async (req, res) => {
   };
 
   const { purchasePrice, shippingPrice, processingFee, totalPrice } =
-    calcPrices(lowestAsk);
+    calcBidPrices(lowestAsk);
 
   const order = new Order({
     orderItem: { ...orderItem },

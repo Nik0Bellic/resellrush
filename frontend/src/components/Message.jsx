@@ -2,7 +2,7 @@ import { AiOutlineInfoCircle, AiOutlineCheck } from 'react-icons/ai';
 import { VscError } from 'react-icons/vsc';
 import { RiErrorWarningLine } from 'react-icons/ri';
 
-const Message = ({ variant, text, small }) => {
+const Message = ({ variant, text, small, noLabel }) => {
   let color;
   let icon;
   switch (variant) {
@@ -29,33 +29,25 @@ const Message = ({ variant, text, small }) => {
 
   return (
     <div
-      className={`${
-        small
-          ? 'mb-3 px-0 mx-0'
-          : 'container mx-auto px-6 lg:px-28 xl:px-6 my-7'
+      className={`w-full relative py-3 md:py-4 lg:py-5 flex items-center rounded-md ${
+        small ? 'px-2 text-sm mb-4' : 'px-5 my-7'
       }`}
+      style={{
+        backgroundColor: `${color}20`,
+        color: `${color}E6`,
+      }}
     >
-      <div
-        className={`w-full relative py-3 md:py-4 lg:py-5 flex items-center rounded-md ${
-          small ? 'px-2 text-sm' : 'px-5'
-        }`}
+      <span
+        className={`absolute w-2 top-0 left-0 bottom-0 bg-[${color}] rounded-l-md`}
         style={{
-          backgroundColor: `${color}20`,
-          color: `${color}E6`,
+          backgroundColor: color,
         }}
-      >
-        <span
-          className={`absolute w-2 top-0 left-0 bottom-0 bg-[${color}] rounded-l-md`}
-          style={{
-            backgroundColor: color,
-          }}
-        ></span>
-        <div className='text-2xl md:text-3xl ml-2 md:ml-3'>{icon}</div>
-        {variant !== 'Warning' && (
-          <div className='text-sm md:text-base ml-2 font-bold'>{variant}</div>
-        )}
-        <div className='md:text-lg ml-3'>{text}</div>
-      </div>
+      ></span>
+      <div className='text-2xl md:text-3xl ml-2 md:ml-3'>{icon}</div>
+      {!noLabel && (
+        <div className='text-sm md:text-base mx-2 font-bold'>{variant}</div>
+      )}
+      <div className='md:text-lg ml-1'>{text}</div>
     </div>
   );
 };
@@ -63,6 +55,7 @@ const Message = ({ variant, text, small }) => {
 Message.defaultProps = {
   variant: 'Info',
   small: false,
+  noLabel: false,
 };
 
 export default Message;

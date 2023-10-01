@@ -42,3 +42,7 @@ app.use(notFound);
 app.use(errorHanlder);
 
 app.listen(port, () => console.log(`Server running on port ${port}`));
+
+app.use((err, req, res, next) => {
+  res.status(500).send({ message: err.message });
+});

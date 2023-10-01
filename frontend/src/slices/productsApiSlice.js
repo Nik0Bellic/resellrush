@@ -1,4 +1,4 @@
-import { PRODUCTS_URL, UPLOAD_URL } from '../constants';
+import { PRODUCTS_URL, UPLOAD_URL, PAYPAL_URL } from '../constants';
 import { apiSlice } from './apiSlice';
 
 export const productsApiSlice = apiSlice.injectEndpoints({
@@ -56,6 +56,28 @@ export const productsApiSlice = apiSlice.injectEndpoints({
       }),
       keepUnusedDataFor: 5,
     }),
+    placeAsk: builder.mutation({
+      query: (data) => ({
+        url: `${PRODUCTS_URL}/${data.sellItem.productIdentifier}/asks`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Products'],
+    }),
+    placeBid: builder.mutation({
+      query: (data) => ({
+        url: `${PRODUCTS_URL}/${data.buyItem.productIdentifier}/bids`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Products'],
+    }),
+    getPayPalClientId: builder.query({
+      query: () => ({
+        url: PAYPAL_URL,
+      }),
+      keepUnusedDataFor: 5,
+    }),
   }),
 });
 
@@ -67,4 +89,7 @@ export const {
   useUploadProductImageMutation,
   useDeleteProductMutation,
   useGetLatestProductsQuery,
+  usePlaceAskMutation,
+  usePlaceBidMutation,
+  useGetPayPalClientIdQuery,
 } = productsApiSlice;

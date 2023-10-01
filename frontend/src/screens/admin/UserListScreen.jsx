@@ -71,14 +71,14 @@ const UserListScreen = () => {
   });
 
   return (
-    <div className='container mx-auto px-6 md:max-w-3xl lg:max-w-6xl lg:px-28 xl:px-6'>
+    <>
       <div className='mt-8 font-bold text-xl sm:text-2xl lg:text-3xl'>
         All Users
       </div>
       {isLoading ? (
         <Loader />
       ) : error ? (
-        <Message varinat='Error' text={error?.data?.message || error.error} />
+        <Message variant='Error' text={error?.data?.message || error.error} />
       ) : (
         <div className='mt-8'>
           <table className='min-w-full bg-transparent'>
@@ -136,7 +136,7 @@ const UserListScreen = () => {
           </table>
         </div>
       )}
-    </div>
+    </>
   );
 };
 export default UserListScreen;

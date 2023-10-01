@@ -107,7 +107,7 @@ const ProductCreateScreen = () => {
   };
 
   return (
-    <div className='container mx-auto px-6 md:max-w-3xl lg:max-w-6xl lg:px-28 xl:px-6'>
+    <>
       <div className='mt-8 lg:mt-12'>
         <Link
           to='/admin/productList'
@@ -239,7 +239,12 @@ const ProductCreateScreen = () => {
         )}
 
         {noImageMessage && (
-          <Message variant='Warning' text={noImageMessage} small={true} />
+          <Message
+            variant='Warning'
+            text={noImageMessage}
+            small={true}
+            noLabel={true}
+          />
         )}
 
         <div>
@@ -253,7 +258,7 @@ const ProductCreateScreen = () => {
 
         {loadingCreate && <Loader />}
       </form>
-    </div>
+    </>
   );
 };
 export default ProductCreateScreen;

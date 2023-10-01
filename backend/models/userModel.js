@@ -1,6 +1,85 @@
 import mongoose from 'mongoose';
-import { bidSchema, askSchema } from './bidAndAskModels.js';
 import bcrypt from 'bcryptjs';
+
+const userAskSchema = mongoose.Schema(
+  {
+    price: {
+      type: Number,
+      required: true,
+    },
+    expiration: {
+      type: Number,
+      required: true,
+      default: 30,
+    },
+    size: {
+      type: String,
+      required: true,
+    },
+    productIdentifier: {
+      type: String,
+      required: true,
+    },
+    returnShippingInfo: {
+      shippingService: { type: String, required: true },
+      firstName: { type: String, required: true },
+      lastName: { type: String, required: true },
+      country: { type: String, required: true },
+      city: { type: String, required: true },
+      region: { type: String, required: true },
+      address: { type: String, required: true },
+      postalCode: { type: String, required: true },
+      shippingComments: { type: String },
+    },
+    payoutMethod: {
+      type: String,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const userBidSchema = mongoose.Schema(
+  {
+    price: {
+      type: Number,
+      required: true,
+    },
+    expiration: {
+      type: Number,
+      required: true,
+      default: 30,
+    },
+    size: {
+      type: String,
+      required: true,
+    },
+    productIdentifier: {
+      type: String,
+      required: true,
+    },
+    shippingInfo: {
+      shippingService: { type: String, required: true },
+      firstName: { type: String, required: true },
+      lastName: { type: String, required: true },
+      country: { type: String, required: true },
+      city: { type: String, required: true },
+      region: { type: String, required: true },
+      address: { type: String, required: true },
+      postalCode: { type: String, required: true },
+      shippingComments: { type: String },
+    },
+    paymentMethod: {
+      type: String,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 const userSchema = mongoose.Schema(
   {
@@ -21,13 +100,31 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    shippingInfo: {
+      shippingService: { type: String },
+      firstName: { type: String },
+      lastName: { type: String },
+      country: { type: String },
+      city: { type: String },
+      region: { type: String },
+      address: { type: String },
+      postalCode: { type: String },
+    },
+    payMethod: {
+      type: String,
+    },
+    isSeller: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     isAdmin: {
       type: Boolean,
       required: true,
       default: false,
     },
-    bids: [bidSchema],
-    asks: [askSchema],
+    currentAsks: [userAskSchema],
+    currentBids: [userBidSchema],
   },
   {
     timestamps: true,
@@ -40,11 +137,17 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
-    next();
+    return next();
   }
 
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
+  // Check if the password is already hashed
+  if (this.password && this.password.startsWith('$2a$')) {
+    return next();
+  } else {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    return next();
+  }
 });
 
 const User = mongoose.model('User', userSchema);

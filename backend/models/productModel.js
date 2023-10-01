@@ -1,16 +1,26 @@
 import mongoose from 'mongoose';
-import { bidSchema, askSchema } from './bidAndAskModels.js';
 
-const sizePriceSchema = mongoose.Schema({
-  size: {
-    type: Number,
-    required: true,
+const productOfferSchema = mongoose.Schema(
+  {
+    price: {
+      type: Number,
+      required: true,
+    },
+    expiration: {
+      type: Number,
+      required: true,
+      default: 30,
+    },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'User',
+    },
   },
-  price: {
-    type: Number,
-    required: true,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 const productSchema = mongoose.Schema(
   {
@@ -30,6 +40,7 @@ const productSchema = mongoose.Schema(
     productIdentifier: {
       type: String,
       index: true,
+      required: true,
     },
     image: {
       type: String,
@@ -68,53 +79,27 @@ const productSchema = mongoose.Schema(
     description: {
       type: String,
     },
-    bids: [bidSchema],
-    asks: [askSchema],
-    availableSizes: [sizePriceSchema],
-    lowestAsk: {
-      type: Number,
-      required: true,
-      default: 0,
+    sizes: {
+      type: Map,
+      of: {
+        asks: [productOfferSchema],
+        bids: [productOfferSchema],
+      },
     },
-    lastSale: {
+    productLowestAsk: {
       type: Number,
-      required: true,
-      default: 0,
+    },
+    productHighestBid: {
+      type: Number,
+    },
+    productLastSale: {
+      type: Number,
     },
   },
   {
     timestamps: true,
   }
 );
-
-productSchema.pre('save', function (next) {
-  this.productIdentifier = (this.name + ' ' + this.color)
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9-]+/g, '');
-  next();
-});
-
-// productSchema.methods.getAvailableSizesDict = function () {
-//   const dict = {};
-//   this.availableSizes.forEach((sizePrice) => {
-//     dict[sizePrice.size] = sizePrice.price;
-//   });
-//   return dict;
-// };
-
-// productSchema.pre('save', function(next) {
-//   if (this.availableSizes && this.availableSizes.length > 0) {
-//     let lowest = this.availableSizes[0].price;
-//     this.availableSizes.forEach(sizePrice => {
-//       if (sizePrice.price < lowest) {
-//         lowest = sizePrice.price;
-//       }
-//     });
-//     this.lowestAsk = lowest;
-//   }
-//   next();
-// });
 
 const Product = mongoose.model('Product', productSchema);
 

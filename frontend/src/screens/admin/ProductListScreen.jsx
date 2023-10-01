@@ -32,12 +32,12 @@ const columns = [
       },
     }
   ),
-  columnHelper.accessor((row) => row.lowestAsk, {
+  columnHelper.accessor((row) => row.productLowestAsk, {
     id: 'lowestAsk',
     header: 'Lowest Ask',
     cell: (info) => <div className='font-bold'>${info.getValue()}</div>,
   }),
-  columnHelper.accessor((row) => row.lastSale, {
+  columnHelper.accessor((row) => row.productLastSale, {
     id: 'lastSale',
     header: 'Last Sale',
     cell: (info) => <div className='font-bold'>${info.getValue()}</div>,
@@ -84,7 +84,7 @@ const ProductListScreen = () => {
     <>
       {message && <Message variant='Success' text={message} />}
 
-      <div className='container mx-auto px-6 md:max-w-3xl lg:max-w-6xl lg:px-28 xl:px-6'>
+      <>
         <div className='mt-8 flex justify-between items-center'>
           <div className='font-bold text-xl sm:text-2xl lg:text-3xl'>
             All Products
@@ -152,7 +152,7 @@ const ProductListScreen = () => {
             <Paginate pages={data.pages} page={data.page} isAdmin={true} />
           </div>
         )}
-      </div>
+      </>
     </>
   );
 };

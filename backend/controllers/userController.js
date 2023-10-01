@@ -1,5 +1,6 @@
 import asyncHandler from '../middleware/asyncHandler.js';
 import User from '../models/userModel.js';
+import Product from '../models/productModel.js';
 import generateToken from '../utils/generateToken.js';
 
 // @desc    Auth user & get token
@@ -18,6 +19,8 @@ const authUser = asyncHandler(async (req, res) => {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      shippingInfo: user.shippingInfo,
+      isSeller: user.isSeller,
       isAdmin: user.isAdmin,
     });
   } else {
@@ -54,6 +57,7 @@ const registerUser = asyncHandler(async (req, res) => {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      isSeller: user.isSeller,
       isAdmin: user.isAdmin,
     });
   } else {
@@ -86,6 +90,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      isSeller: user.isSeller,
       isAdmin: user.isAdmin,
     });
   } else {
@@ -116,8 +121,120 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       firstName: updatedUser.firstName,
       lastName: updatedUser.lastName,
       email: updatedUser.email,
+      isSeller: updatedUser.isSeller,
       isAdmin: updatedUser.isAdmin,
     });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+// @desc    Update logged in user shipping info
+// @route   PUT /api/users/shipping
+// @access  Private
+const updateShippingInfo = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+
+  if (user) {
+    user.shippingInfo = req.body;
+
+    const updatedUser = await user.save();
+
+    res.status(200).json({
+      _id: updateUser._id,
+      shippingInfo: updatedUser.shippingInfo,
+    });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+// @desc    Update logged in user pay method
+// @route   PUT /api/users/payMethod
+// @access  Private
+const updatePayMethod = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+
+  if (user) {
+    user.payMethod = req.body.payMethod;
+
+    const updatedUser = await user.save();
+
+    res.status(200).json({
+      _id: updatedUser._id,
+      payMethod: updatedUser.payMethod,
+    });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+// @desc    Get logged in user asks
+// @route   GET /api/users/asks/mine
+// @access  Private
+const getMyCurrentAsks = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (user) {
+    const rowCurrentAsks = user.currentAsks;
+
+    const currentAsks = await Promise.all(
+      rowCurrentAsks.map(async (ask) => {
+        const product = await Product.findOne({
+          productIdentifier: ask.productIdentifier,
+        });
+        if (!product) {
+          throw new Error(`Product not found`);
+        }
+        const lowestPriceForSize = product.sizes.get(ask.size).asks[0].price;
+        return {
+          ...ask._doc,
+          productName: product.name,
+          productColor: product.color,
+          productImage: product.image,
+          currentLowestAsk: lowestPriceForSize,
+        };
+      })
+    );
+
+    res.status(200).json(currentAsks);
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+// @desc    Get logged in user asks
+// @route   GET /api/users/asks/mine
+// @access  Private
+const getMyCurrentBids = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (user) {
+    const rowCurrentBids = user.currentBids;
+
+    const currentBids = await Promise.all(
+      rowCurrentBids.map(async (bid) => {
+        const product = await Product.findOne({
+          productIdentifier: bid.productIdentifier,
+        });
+        if (!product) {
+          throw new Error(`Product not found`);
+        }
+        const highestBidForSize = product.sizes.get(bid.size).bids[0]?.price;
+
+        return {
+          ...bid._doc,
+          productName: product.name,
+          productColor: product.color,
+          productImage: product.image,
+          currentHighestBid: highestBidForSize,
+        };
+      })
+    );
+
+    res.status(200).json(currentBids);
   } else {
     res.status(404);
     throw new Error('User not found');
@@ -175,16 +292,18 @@ const updateUser = asyncHandler(async (req, res) => {
     user.firstName = req.body.firstName || user.firstName;
     user.lastName = req.body.lastName || user.lastName;
     user.email = req.body.email || user.email;
+    user.isSeller = Boolean(req.body.isSeller);
     user.isAdmin = Boolean(req.body.isAdmin);
 
     const updatedUser = await user.save();
 
     res.status(200).json({
-      _id: updateUser._id,
-      firstName: updateUser.firstName,
-      lastName: updateUser.lastName,
-      email: updateUser.email,
-      isAdmin: updateUser.isAdmin,
+      _id: updatedUser._id,
+      firstName: updatedUser.firstName,
+      lastName: updatedUser.lastName,
+      email: updatedUser.email,
+      isSeller: updatedUser.isSeller,
+      isAdmin: updatedUser.isAdmin,
     });
   } else {
     res.status(404);
@@ -198,6 +317,10 @@ export {
   logoutUser,
   getUserProfile,
   updateUserProfile,
+  updateShippingInfo,
+  updatePayMethod,
+  getMyCurrentAsks,
+  getMyCurrentBids,
   getUsers,
   deleteUser,
   getUserById,

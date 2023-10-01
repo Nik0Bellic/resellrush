@@ -123,7 +123,7 @@ const OrderScreen = () => {
       {order.isPaid ? (
         <Message variant='Success' text={`Paid on ${order.paidAt}`} />
       ) : (
-        <Message variant='Warning' text='Not Paid' />
+        <Message variant='Warning' text='Not Paid' noLabel={true} />
       )}
       {order.isPaid &&
         (order.isDelivered ? (
@@ -132,9 +132,9 @@ const OrderScreen = () => {
             text={`Delivered on ${order.deliveredAt}`}
           />
         ) : (
-          <Message variant='Warning' text='Not Delivered' />
+          <Message variant='Warning' text='Not Delivered' noLabel={true} />
         ))}
-      <div className='container mx-auto px-6 md:max-w-3xl lg:max-w-6xl lg:px-28 xl:px-6'>
+      <>
         <div className='flex justify-between my-8 lg:my-12'>
           <div>
             <div className='text-xl font-semibold'>{order.orderItem.name}</div>
@@ -267,7 +267,7 @@ const OrderScreen = () => {
             )}
           </div>
         </div>
-      </div>
+      </>
     </>
   );
 };

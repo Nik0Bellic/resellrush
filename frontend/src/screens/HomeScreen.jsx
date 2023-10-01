@@ -21,9 +21,9 @@ const HomeScreen = () => {
       ) : error ? (
         <Message variant='Error' text={error?.data?.message || error.error} />
       ) : (
-        <div className='container mx-auto px-4 lg:px-12 mt-10'>
+        <>
           {!keyword && (
-            <div className='relative'>
+            <div className='relative mt-8 lg:mt-10'>
               <ProductCarousel />
             </div>
           )}
@@ -74,7 +74,7 @@ const HomeScreen = () => {
             keyword={keyword ? keyword : ''}
           />
           {/* </div> */}
-        </div>
+        </>
       )}
     </>
   );

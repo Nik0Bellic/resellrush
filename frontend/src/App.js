@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Outlet } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import AuthPopup from './components/AuthPopup';
@@ -25,12 +23,11 @@ const App = () => {
   return (
     <>
       <Header />
-      <main className='pb-48'>
+      <main className='pb-48 container mx-auto px-6 md:px-7 md:max-w-3xl lg:px-28 xl:px-6 lg:max-w-5xl xl:max-w-6xl'>
         <Outlet />
       </main>
       <Footer />
       <AuthPopup />
-      <ToastContainer />
     </>
   );
 };

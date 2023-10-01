@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+.fullWidthBorder {
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100vw;
+  border-bottom: 2px solid black;
+}
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;

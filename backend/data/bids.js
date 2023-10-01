@@ -10,7 +10,7 @@ const bids = [
     expiration: 3,
   },
   {
-    size: 10.5,
+    size: '10,5',
     price: 300,
     expiration: 7,
   },

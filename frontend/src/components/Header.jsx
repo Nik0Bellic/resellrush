@@ -98,7 +98,7 @@ const Header = () => {
           {/* Right Button Menu */}
           <div className='hidden lg:flex items-center'>
             <SearchBox />
-            <Link to='/favorites'>
+            <Link to='/favorites' className='relative'>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 fill='none'
@@ -114,7 +114,7 @@ const Header = () => {
                 />
               </svg>
               {favoriteItems.length > 0 && (
-                <div className='absolute border-2 border-white rounded-full bg-strongYellow text-white text-sm right-32 -mt-5 w-6 flex justify-center items-center'>
+                <div className='absolute border-2 border-white rounded-full bg-strongYellow text-white text-sm -mt-6 left-8 w-7 h-7 flex justify-center items-center'>
                   {favoriteItems.length}
                 </div>
               )}

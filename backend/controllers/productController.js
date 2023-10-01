@@ -261,6 +261,90 @@ const placeAsk = asyncHandler(async (req, res) => {
   res.status(201).json({ message: 'Ask placed' });
 });
 
+// @desc    Sale Item
+// @route   POST /api/products/:productId/sale
+// @access  Private/Seller
+const saleNow = asyncHandler(async (req, res) => {
+  const {
+    sellItem: itemFromClient,
+    buyer: buyerFromClient,
+    seller: sellerFromClientId,
+    bidId,
+    size,
+    salePrice,
+    returnShippingInfo,
+  } = req.body;
+
+  // Verify Product and User
+  const itemFromDB = await Product.findById(itemFromClient._id);
+  const buyerFromDB = await User.findById(buyerFromClient._id);
+  const sellerFromDB = await User.findById(sellerFromClientId);
+  if (!itemFromDB) {
+    res.status(400);
+    throw new Error('Product not found');
+  }
+  if (!buyerFromDB) {
+    res.status(400);
+    throw new Error('User not found');
+  }
+  if (!sellerFromDB) {
+    res.status(400);
+    throw new Error('Seller not found');
+  }
+
+  // Validate Purchase Price
+  const buyerBidPrice = buyerFromDB.currentBids.find(
+    (bid) => bid.bidId === bidId
+  )?.price;
+  if (!buyerBidPrice) {
+    res.status(400);
+    throw new Error('Bid for this price not found');
+  } else if (buyerBidPrice !== salePrice) {
+    res.status(400);
+    throw new Error(
+      'Sale price is not equal to highest bid price for this size'
+    );
+  }
+
+  // Delete bid from Item Bids
+  const productBidsBySize = itemFromDB.sizes.get(size).bids;
+  const position = productBidsBySize.findIndex((bid) => bid.offerId === bidId);
+  productBidsBySize.splice(position, 1);
+
+  // Update Seller's Asks
+  sellerFromDB.pendingAsks.unshift({
+    buyer: buyerFromDB,
+    price: salePrice,
+    size,
+    productIdentifier: itemFromDB.productIdentifier,
+    returnShippingInfo,
+    payoutMethod,
+    askId: bidId,
+  });
+
+  // Update Buyer's bids
+  const buyerCurrentBids = buyerFromDB.currentBids;
+  const deletePosition = buyerCurrentBids.findIndex(
+    (bid) => bid.bidId === bidId
+  );
+  buyerFromDB.pendingBids.unshift({
+    seller: sellerFromDB,
+    price: salePrice,
+    size,
+    productIdentifier: itemFromDB.productIdentifier,
+    shippingInfo: buyerCurrentBids[deletePosition].shippingInfo,
+    paymentMethod: buyerCurrentBids[deletePosition].paymentMethod,
+    bidId,
+  });
+  buyerCurrentBids.splice(deletePosition, 1);
+
+  await itemFromDB.save();
+  await buyerFromDB.save();
+  await sellerFromDB.save();
+
+  res.status(201).json({ message: 'Sale Made Successfully' });
+});
+
 // @desc    Place new bid
 // @route   POST /api/products/:productId/bids
 // @access  Private
@@ -452,6 +536,7 @@ export {
   deleteProduct,
   getLatestProducts,
   placeAsk,
+  saleNow,
   placeBid,
   purchaseNow,
 };

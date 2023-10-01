@@ -64,6 +64,14 @@ export const productsApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Products'],
     }),
+    saleNow: builder.mutation({
+      query: (data) => ({
+        url: `${PRODUCTS_URL}/${data.buyItem.productIdentifier}/sale`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Products'],
+    }),
     placeBid: builder.mutation({
       query: (data) => ({
         url: `${PRODUCTS_URL}/${data.buyItem.productIdentifier}/bids`,
@@ -98,6 +106,7 @@ export const {
   useDeleteProductMutation,
   useGetLatestProductsQuery,
   usePlaceAskMutation,
+  useSaleNowMutation,
   usePlaceBidMutation,
   usePurchaseNowMutation,
   useGetPayPalClientIdQuery,

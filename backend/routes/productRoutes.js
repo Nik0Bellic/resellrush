@@ -8,6 +8,7 @@ import {
   deleteProduct,
   getLatestProducts,
   placeAsk,
+  saleNow,
   placeBid,
   purchaseNow,
 } from '../controllers/productController.js';
@@ -21,6 +22,7 @@ router
   .put(protect, admin, updateProduct)
   .delete(protect, admin, deleteProduct);
 router.route('/:productId/asks').post(protect, seller, placeAsk);
+router.route('/:productId/sale').post(protect, seller, saleNow);
 router.route('/:productId/bids').post(protect, placeBid);
 router.route('/:productId/purchase').post(protect, purchaseNow);
 

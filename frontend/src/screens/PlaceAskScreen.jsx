@@ -9,7 +9,10 @@ import {
   useUpdateShippingInfoMutation,
   useUpdatePayMethodMutation,
 } from '../slices/usersApiSlice';
-import { usePlaceAskMutation } from '../slices/productsApiSlice';
+import {
+  usePlaceAskMutation,
+  useSaleNowMutation,
+} from '../slices/productsApiSlice';
 import { setCredentials } from '../slices/authSlice';
 
 const PlaceAskScreen = () => {
@@ -20,6 +23,8 @@ const PlaceAskScreen = () => {
   const ask = useSelector((state) => state.ask);
   const {
     sellItem,
+    buyer,
+    bidId,
     size,
     type,
     expiration,
@@ -98,6 +103,7 @@ const PlaceAskScreen = () => {
   ];
 
   const [placeAsk, { isLoading, error }] = usePlaceAskMutation();
+  const [saleNow] = useSaleNowMutation();
   const [placeAskError, setPlaceAskError] = useState('');
 
   const navigate = useNavigate();
@@ -114,6 +120,7 @@ const PlaceAskScreen = () => {
       setNoPayoutMethod(true);
       setTimeout(() => setNoPayoutMethod(false), 10000);
     } else {
+      // Update user's shipping and payment details if they have changed
       const returnShippingInfo = {
         shippingService,
         firstName,
@@ -124,6 +131,7 @@ const PlaceAskScreen = () => {
         address,
         postalCode,
       };
+
       if (
         returnShippingInfo !== userInfo.shippingInfo ||
         payoutMethod !== userInfo.payMethod
@@ -149,6 +157,22 @@ const PlaceAskScreen = () => {
       }
 
       if (type === 'sale') {
+        await saleNow({
+          sellItem,
+          seller: userInfo,
+          buyer,
+          bidId,
+          size: size.replace('.', ','),
+          salePrice: askPrice,
+          returnShippingInfo,
+          payoutMethod,
+        });
+        navigate('/profile/selling', {
+          state: {
+            message: 'Sale made successfully!',
+            type: 'pending',
+          },
+        });
       } else if (type === 'ask') {
         try {
           await placeAsk({
@@ -494,7 +518,9 @@ const PlaceAskScreen = () => {
                     type='submit'
                     className='border-2 text-center px-3 sm:px-5 lg:px-8 xl:px-10 py-1.5 sm:py-2 xl:py-3 rounded-full hover:scale-110 border-strongYellow active:bg-strongYellow active:border-black duration-200'
                   >
-                    Place Ask
+                    {type === 'ask'
+                      ? 'Place Ask'
+                      : type === 'sale' && 'Sale Now'}
                   </button>
                 </div>
 

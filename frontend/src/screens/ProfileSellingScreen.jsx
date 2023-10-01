@@ -5,14 +5,16 @@ import CurrentUserAsksTable from '../components/CurrentUserAsksTable';
 import PendingUserAsksTable from '../components/PendingUserAsksTable';
 
 const Selling = () => {
-  const [sellingType, setSellingType] = useState('current');
-
   const [selectedSum, setSelectedSum] = useState(0);
 
   const navigate = useNavigate();
 
   const location = useLocation();
   const message = location.state?.message;
+
+  const [sellingType, setSellingType] = useState(
+    location.state?.type || 'current'
+  );
 
   useEffect(() => {
     if (message) {

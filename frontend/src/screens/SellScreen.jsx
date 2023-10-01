@@ -120,11 +120,22 @@ const SellScreen = () => {
           );
           navigate(`/sell/${productId}/placeAsk`);
         }
+      } else {
+        const buyer = product.sizes[selectedSize].bids[0].user;
+        const bidId = product.sizes[selectedSize].bids[0].offerId;
+
+        dispatch(
+          createAsk({
+            sellItem: product,
+            buyer,
+            bidId,
+            size: selectedSize.replace(',', '.'),
+            type: 'sale',
+            askPrice: salePrice,
+          })
+        );
+        navigate(`/sell/${productId}/placeAsk`);
       }
-      // else {
-      //   dispatch(createAsk({ ...product, size, askPrice: salePrice }));
-      //   navigate(`/sell/${productId}/placeAsk`);
-      // }
     }
   };
 

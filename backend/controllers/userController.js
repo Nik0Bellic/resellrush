@@ -172,8 +172,8 @@ const updatePayMethod = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Get logged in user asks
-// @route   GET /api/users/asks/mine
+// @desc    Get logged in user current asks
+// @route   GET /api/users/asks/current
 // @access  Private
 const getMyCurrentAsks = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
@@ -206,8 +206,41 @@ const getMyCurrentAsks = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Get logged in user asks
-// @route   GET /api/users/asks/mine
+// @desc    Get logged in user pending asks
+// @route   GET /api/users/asks/pending
+// @access  Private
+const getMyPendingAsks = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (user) {
+    const rowPendingAsks = user.pendingAsks;
+
+    const pendingAsks = await Promise.all(
+      rowPendingAsks.map(async (ask) => {
+        const product = await Product.findOne({
+          productIdentifier: ask.productIdentifier,
+        });
+        if (!product) {
+          throw new Error(`Product not found`);
+        }
+
+        return {
+          ...ask._doc,
+          productName: product.name,
+          productColor: product.color,
+          productImage: product.image,
+        };
+      })
+    );
+
+    res.status(200).json(pendingAsks);
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+// @desc    Get logged in user current bids
+// @route   GET /api/users/bids/current
 // @access  Private
 const getMyCurrentBids = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
@@ -235,6 +268,39 @@ const getMyCurrentBids = asyncHandler(async (req, res) => {
     );
 
     res.status(200).json(currentBids);
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+// @desc    Get logged in user pending bids
+// @route   GET /api/users/bids/pending
+// @access  Private
+const getMyPendingBids = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (user) {
+    const rowPendingBids = user.pendingBids;
+
+    const pendingBids = await Promise.all(
+      rowPendingBids.map(async (bid) => {
+        const product = await Product.findOne({
+          productIdentifier: bid.productIdentifier,
+        });
+        if (!product) {
+          throw new Error(`Product not found`);
+        }
+
+        return {
+          ...bid._doc,
+          productName: product.name,
+          productColor: product.color,
+          productImage: product.image,
+        };
+      })
+    );
+
+    res.status(200).json(pendingBids);
   } else {
     res.status(404);
     throw new Error('User not found');
@@ -320,7 +386,9 @@ export {
   updateShippingInfo,
   updatePayMethod,
   getMyCurrentAsks,
+  getMyPendingAsks,
   getMyCurrentBids,
+  getMyPendingBids,
   getUsers,
   deleteUser,
   getUserById,

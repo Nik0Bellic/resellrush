@@ -72,6 +72,14 @@ export const productsApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Products'],
     }),
+    purchaseNow: builder.mutation({
+      query: (data) => ({
+        url: `${PRODUCTS_URL}/${data.buyItem.productIdentifier}/purchase`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Products'],
+    }),
     getPayPalClientId: builder.query({
       query: () => ({
         url: PAYPAL_URL,
@@ -91,5 +99,6 @@ export const {
   useGetLatestProductsQuery,
   usePlaceAskMutation,
   usePlaceBidMutation,
+  usePurchaseNowMutation,
   useGetPayPalClientIdQuery,
 } = productsApiSlice;

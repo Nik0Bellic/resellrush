@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   createColumnHelper,
   flexRender,
@@ -97,13 +97,15 @@ const CurrentUserAsksTable = ({ setSelectedSum }) => {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const calculateSelectedSum = () => {
+  const calculateSelectedSum = useCallback(() => {
     return table.getSelectedRowModel().flatRows.reduce((sum, row) => {
       return sum + row.original.price;
     }, 0);
-  };
+  }, [table]);
 
-  setSelectedSum(calculateSelectedSum());
+  useEffect(() => {
+    setSelectedSum(calculateSelectedSum());
+  }, [table, setSelectedSum, calculateSelectedSum]);
 
   return (
     <>

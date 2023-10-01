@@ -8,7 +8,9 @@ import {
   updateUserProfile,
   updateShippingInfo,
   getMyCurrentAsks,
+  getMyPendingAsks,
   getMyCurrentBids,
+  getMyPendingBids,
   getUsers,
   deleteUser,
   getUserById,
@@ -26,8 +28,10 @@ router
   .put(protect, updateUserProfile);
 router.put('/shipping', protect, updateShippingInfo);
 router.put('/payMethod', protect, updatePayMethod);
-router.route('/asks/mine').get(protect, getMyCurrentAsks);
-router.route('/bids/mine').get(protect, getMyCurrentBids);
+router.route('/asks/current').get(protect, getMyCurrentAsks);
+router.route('/asks/pending').get(protect, getMyPendingAsks);
+router.route('/bids/current').get(protect, getMyCurrentBids);
+router.route('/bids/pending').get(protect, getMyPendingBids);
 router
   .route('/:id')
   .delete(protect, admin, deleteUser)

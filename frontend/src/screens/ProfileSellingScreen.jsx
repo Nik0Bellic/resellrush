@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Message from '../components/Message';
 import CurrentUserAsksTable from '../components/CurrentUserAsksTable';
+import PendingUserAsksTable from '../components/PendingUserAsksTable';
 
 const Selling = () => {
   const [sellingType, setSellingType] = useState('current');
@@ -97,17 +98,23 @@ const Selling = () => {
             History
           </label>
         </div>
-        <div className='col-span-5 xl:col-span-6 xl:justify-self-end flex items-center border-2 border-black rounded-full text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl'>
-          <div className='px-1.5 sm:px-3 md:px-4 lg:px-5 py-3 lg:py-[0.63rem] whitespace-nowrap'>
-            Sum of selected asks
+        {sellingType !== 'pending' && (
+          <div className='col-span-5 xl:col-span-6 xl:justify-self-end flex items-center border-2 border-black rounded-full text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl'>
+            <div className='px-1.5 sm:px-3 md:px-4 lg:px-5 py-3 lg:py-[0.63rem] whitespace-nowrap'>
+              Sum of selected asks
+            </div>
+            <div className='flex justify-center pr-1 sm:pr-2 py-3 lg:py-[0.63rem] xl:px-5 text-md w-full border-l-2 border-black rounded-full rounded-l-none font-semibold'>
+              ${selectedSum}
+            </div>
           </div>
-          <div className='flex justify-center pr-1 sm:pr-2 py-3 lg:py-[0.63rem] xl:px-5 text-md w-full border-l-2 border-black rounded-full rounded-l-none font-semibold'>
-            ${selectedSum}
-          </div>
-        </div>
+        )}
       </div>
-      {sellingType === 'current' && (
-        <CurrentUserAsksTable setSelectedSum={setSelectedSum} />
+      {sellingType === 'pending' ? (
+        <PendingUserAsksTable />
+      ) : (
+        sellingType === 'current' && (
+          <CurrentUserAsksTable setSelectedSum={setSelectedSum} />
+        )
       )}
     </>
   );

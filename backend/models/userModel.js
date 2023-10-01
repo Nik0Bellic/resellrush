@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-const userAskSchema = mongoose.Schema(
+const userCurrentAskSchema = mongoose.Schema(
   {
     price: {
       type: Number,
@@ -35,13 +35,86 @@ const userAskSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    askId: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-const userBidSchema = mongoose.Schema(
+const userPendingAskSchema = mongoose.Schema(
+  {
+    buyer: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'User',
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    size: {
+      type: String,
+      required: true,
+    },
+    productIdentifier: {
+      type: String,
+      required: true,
+    },
+    returnShippingInfo: {
+      shippingService: { type: String, required: true },
+      firstName: { type: String, required: true },
+      lastName: { type: String, required: true },
+      country: { type: String, required: true },
+      city: { type: String, required: true },
+      region: { type: String, required: true },
+      address: { type: String, required: true },
+      postalCode: { type: String, required: true },
+      shippingComments: { type: String },
+    },
+    payoutMethod: {
+      type: String,
+      required: true,
+    },
+    status: {
+      type: String,
+      required: true,
+      default: 'Matched',
+    },
+    askId: {
+      type: String,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const userHistoryAskSchema = mongoose.Schema(
+  {
+    price: {
+      type: Number,
+      required: true,
+    },
+    size: {
+      type: String,
+      required: true,
+    },
+    productIdentifier: {
+      type: String,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const userCurrentBidSchema = mongoose.Schema(
   {
     price: {
       type: Number,
@@ -72,6 +145,79 @@ const userBidSchema = mongoose.Schema(
       shippingComments: { type: String },
     },
     paymentMethod: {
+      type: String,
+      required: true,
+    },
+    bidId: {
+      type: String,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const userPendingBidSchema = mongoose.Schema(
+  {
+    seller: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'User',
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    size: {
+      type: String,
+      required: true,
+    },
+    productIdentifier: {
+      type: String,
+      required: true,
+    },
+    shippingInfo: {
+      shippingService: { type: String, required: true },
+      firstName: { type: String, required: true },
+      lastName: { type: String, required: true },
+      country: { type: String, required: true },
+      city: { type: String, required: true },
+      region: { type: String, required: true },
+      address: { type: String, required: true },
+      postalCode: { type: String, required: true },
+      shippingComments: { type: String },
+    },
+    paymentMethod: {
+      type: String,
+      required: true,
+    },
+    status: {
+      type: String,
+      required: true,
+      default: 'Matched',
+    },
+    bidId: {
+      type: String,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const userHistoryBidSchema = mongoose.Schema(
+  {
+    price: {
+      type: Number,
+      required: true,
+    },
+    size: {
+      type: String,
+      required: true,
+    },
+    productIdentifier: {
       type: String,
       required: true,
     },
@@ -123,8 +269,12 @@ const userSchema = mongoose.Schema(
       required: true,
       default: false,
     },
-    currentAsks: [userAskSchema],
-    currentBids: [userBidSchema],
+    currentAsks: [userCurrentAskSchema],
+    currentBids: [userCurrentBidSchema],
+    pendingAsks: [userPendingAskSchema],
+    pendingBids: [userPendingBidSchema],
+    historyAsks: [userHistoryAskSchema],
+    historyBids: [userHistoryBidSchema],
   },
   {
     timestamps: true,

@@ -7,15 +7,15 @@ import {
 } from '@tanstack/react-table';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
-import { useGetMyPendingBidsQuery } from '../slices/usersApiSlice';
+import { useGetMyPendingAsksQuery } from '../slices/usersApiSlice';
 import { FaArrowRightLong } from 'react-icons/fa6';
 
-const PendingUserBidsTable = () => {
+const PendingUserAsksTable = () => {
   const {
-    data: pendingBids = [],
+    data: pendingAsks = [],
     isLoading,
     error,
-  } = useGetMyPendingBidsQuery();
+  } = useGetMyPendingAsksQuery();
 
   const columnHelper = createColumnHelper();
 
@@ -66,7 +66,7 @@ const PendingUserBidsTable = () => {
   ];
 
   const table = useReactTable({
-    data: pendingBids,
+    data: pendingAsks,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -77,9 +77,9 @@ const PendingUserBidsTable = () => {
         <Loader />
       ) : error ? (
         <Message variant='Error' text={error?.data?.message || error.error} />
-      ) : pendingBids.length === 0 ? (
+      ) : pendingAsks.length === 0 ? (
         <div className='mt-8 lg:mt-12 text-xl flex w-full justify-center'>
-          You have no pending bids
+          You have no pending asks
         </div>
       ) : (
         <div className='mt-8'>
@@ -135,4 +135,4 @@ const PendingUserBidsTable = () => {
   );
 };
 
-export default PendingUserBidsTable;
+export default PendingUserAsksTable;

@@ -11,6 +11,7 @@ import {
 } from '../slices/usersApiSlice';
 import {
   usePlaceBidMutation,
+  usePurchaseNowMutation,
   useGetPayPalClientIdQuery,
 } from '../slices/productsApiSlice';
 import { setCredentials } from '../slices/authSlice';
@@ -24,6 +25,8 @@ const PlaceBidScreen = () => {
   const bid = useSelector((state) => state.bid);
   const {
     buyItem,
+    seller,
+    askId,
     size,
     type,
     expiration,
@@ -103,6 +106,9 @@ const PlaceBidScreen = () => {
   const [confirmed, setConfirmed] = useState(false);
 
   const [placeBid, { isLoading, error }] = usePlaceBidMutation();
+  // const [purchaseNow, { isLoading: loadingPurchase, error: errorPurchase }] =
+  //   usePurchaseNowMutation();
+  const [purchaseNow] = usePurchaseNowMutation();
   const [placeBidError, setPlaceBidError] = useState('');
 
   const [showPayPalButton, setShowPayPalButton] = useState(false);
@@ -198,20 +204,40 @@ const PlaceBidScreen = () => {
             };
 
             // Pass the PayPal transaction ID to the placeBid function
-            await placeBid({
-              buyItem,
-              buyer: userInfo,
-              size: size.replace('.', ','),
-              bidPrice,
-              expiration,
-              shippingInfo,
-              paymentMethod,
-              paypalTransactionId: details.id, // Passing the transaction ID
-            });
+            if (type === 'bid') {
+              await placeBid({
+                buyItem,
+                buyer: userInfo,
+                size: size.replace('.', ','),
+                bidPrice,
+                expiration,
+                shippingInfo,
+                paymentMethod,
+                paypalTransactionId: details.id,
+              });
 
-            navigate('/profile/buying', {
-              state: { message: 'Bid placed successfully!' },
-            });
+              navigate('/profile/buying', {
+                state: { message: 'Bid placed successfully!' },
+              });
+            } else if (type === 'purchase') {
+              await purchaseNow({
+                buyItem,
+                buyer: userInfo,
+                seller,
+                askId,
+                size: size.replace('.', ','),
+                purchasePrice: bidPrice,
+                shippingInfo,
+                paymentMethod,
+                paypalTransactionId: details.id,
+              });
+              navigate('/profile/buying', {
+                state: {
+                  message: 'Purchase made successfully!',
+                  type: 'pending',
+                },
+              });
+            }
           } catch (err) {
             setPlaceBidError(err?.data?.message || err.error);
             setTimeout(() => setPlaceBidError(false), 10000);
@@ -695,9 +721,14 @@ const PlaceBidScreen = () => {
                   <Loader />
                 ) : (
                   <>
-                    {confirmed && (
+                    {confirmed && type === 'bid' && (
                       <div className='text-center border-2 border-strongYellow rounded-lg font-bold p-3'>
-                        After payment your bid will be placed
+                        Your bid will be placed after payment
+                      </div>
+                    )}
+                    {confirmed && type === 'purchase' && (
+                      <div className='text-center border-2 border-strongYellow rounded-lg font-bold p-3'>
+                        Your order will be created after payment
                       </div>
                     )}
                     {showPayPalButton && (

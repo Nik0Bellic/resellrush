@@ -88,11 +88,16 @@ const importData = async () => {
         (productAsk) => productAsk.price > askWithoutSize.price
       );
       if (position === -1) {
-        productAsksBySize.push({ ...askWithoutSize, user: randomUser._id });
+        productAsksBySize.push({
+          ...askWithoutSize,
+          user: randomUser._id,
+          offerId: askWithoutSize.askId,
+        });
       } else {
         productAsksBySize.splice(position, 0, {
           ...askWithoutSize,
           user: randomUser._id,
+          offerId: askWithoutSize.askId,
         });
       }
 
@@ -120,11 +125,16 @@ const importData = async () => {
         (productBid) => productBid.price < bid.price
       );
       if (position === -1) {
-        productBidsBySize.push({ ...bidWithoutSize, user: randomUser._id });
+        productBidsBySize.push({
+          ...bidWithoutSize,
+          user: randomUser._id,
+          offerId: bidWithoutSize.bidId,
+        });
       } else {
         productBidsBySize.splice(position, 0, {
           ...bidWithoutSize,
           user: randomUser._id,
+          offerId: bidWithoutSize.bidId,
         });
       }
 

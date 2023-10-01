@@ -16,6 +16,8 @@ const bidSlice = createSlice({
   reducers: {
     createBid: (state, action) => {
       state.buyItem = action.payload.buyItem;
+      state.seller = action.payload.seller;
+      state.askId = action.payload.askId;
       state.size = action.payload.size;
       state.type = action.payload.type;
       state.expiration = action.payload.expiration;

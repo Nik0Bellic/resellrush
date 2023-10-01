@@ -16,6 +16,26 @@ const productOfferSchema = mongoose.Schema(
       required: true,
       ref: 'User',
     },
+    offerId: {
+      type: String,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const productSaleSchema = mongoose.Schema(
+  {
+    price: {
+      type: Number,
+      required: true,
+    },
+    size: {
+      type: Number,
+      required: true,
+    },
   },
   {
     timestamps: true,
@@ -84,6 +104,7 @@ const productSchema = mongoose.Schema(
       of: {
         asks: [productOfferSchema],
         bids: [productOfferSchema],
+        lastSales: [productSaleSchema],
       },
     },
     productLowestAsk: {

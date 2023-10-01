@@ -7,7 +7,7 @@ import Message from '../components/Message';
 import { useGetProductDetailsQuery } from '../slices/productsApiSlice';
 import { setAuthModalActive } from '../slices/authSlice';
 import { createBid } from '../slices/bidSlice';
-import { addToOrder } from '../slices/orderSlice';
+// import { addToOrder } from '../slices/orderSlice';
 import { setSizesModalActive } from '../slices/sizeSlice';
 
 const BuyScreen = () => {
@@ -132,8 +132,20 @@ const BuyScreen = () => {
           navigate(`/buy/${productId}/placeBid`);
         }
       } else {
-        dispatch(addToOrder({ ...product, size: selectedSize, purchasePrice }));
-        navigate(`/buy/${productId}/shipping`);
+        const seller = product.sizes[selectedSize].asks[0].user;
+        const askId = product.sizes[selectedSize].asks[0].offerId;
+
+        dispatch(
+          createBid({
+            buyItem: product,
+            seller,
+            askId,
+            size: selectedSize.replace(',', '.'),
+            type: 'purchase',
+            bidPrice: purchasePrice,
+          })
+        );
+        navigate(`/buy/${productId}/placeBid`);
       }
     }
   };

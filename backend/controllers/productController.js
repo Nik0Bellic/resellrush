@@ -3,6 +3,7 @@ import Product from '../models/productModel.js';
 import User from '../models/userModel.js';
 import { calcBidPrices } from '../utils/calcPrices.js';
 import { verifyPayPalPayment, checkIfNewTransaction } from '../utils/paypal.js';
+import { v4 as uuidv4 } from 'uuid';
 
 // @desc    Fetch all products
 // @route   GET /api/products
@@ -222,6 +223,8 @@ const placeAsk = asyncHandler(async (req, res) => {
     throw new Error('Ask price must be less than highest bid');
   }
 
+  const askId = uuidv4();
+
   const productAsksBySize = itemFromDB.sizes.get(size).asks;
   const position = productAsksBySize.findIndex(
     (productAsk) => productAsk.price > askPrice
@@ -231,12 +234,14 @@ const placeAsk = asyncHandler(async (req, res) => {
       user: userFromDB._id,
       price: askPrice,
       expiration,
+      offerId: askId,
     });
   } else {
     productAsksBySize.splice(position, 0, {
       user: userFromDB._id,
       price: askPrice,
       expiration,
+      offerId: askId,
     });
   }
 
@@ -247,6 +252,7 @@ const placeAsk = asyncHandler(async (req, res) => {
     productIdentifier: itemFromDB.productIdentifier,
     returnShippingInfo,
     payoutMethod,
+    askId,
   });
 
   await itemFromDB.save();
@@ -302,6 +308,8 @@ const placeBid = asyncHandler(async (req, res) => {
   // if (!isNewTransaction) throw new Error('Transaction has been used before');
   if (totalPrice !== value) throw new Error('Incorrect amount paid');
 
+  const bidId = uuidv4();
+
   // Place the Bid in DB
   const productBidsBySize = itemFromDB.sizes.get(size).bids;
   const position = productBidsBySize.findIndex(
@@ -312,12 +320,14 @@ const placeBid = asyncHandler(async (req, res) => {
       user: userFromDB._id,
       price: bidPrice,
       expiration,
+      offerId: bidId,
     });
   } else {
     productBidsBySize.splice(position, 0, {
       user: userFromDB._id,
       price: bidPrice,
       expiration,
+      offerId: bidId,
     });
   }
 
@@ -329,12 +339,109 @@ const placeBid = asyncHandler(async (req, res) => {
     productIdentifier: itemFromDB.productIdentifier,
     shippingInfo,
     paymentMethod,
+    bidId,
   });
 
   await itemFromDB.save();
   await userFromDB.save();
 
   res.status(201).json({ message: 'Bid placed successfully' });
+});
+
+// @desc    Purchase Item
+// @route   POST /api/products/:productId/purchase
+// @access  Private
+const purchaseNow = asyncHandler(async (req, res) => {
+  const {
+    buyItem: itemFromClient,
+    buyer: buyerFromClient,
+    seller: sellerFromClientId,
+    askId,
+    size,
+    purchasePrice,
+    shippingInfo,
+    paymentMethod,
+    paypalTransactionId: paymentId,
+  } = req.body;
+
+  // Verify Product and User
+  const itemFromDB = await Product.findById(itemFromClient._id);
+  const buyerFromDB = await User.findById(buyerFromClient._id);
+  const sellerFromDB = await User.findById(sellerFromClientId);
+  if (!itemFromDB) {
+    res.status(400);
+    throw new Error('Product not found');
+  }
+  if (!buyerFromDB) {
+    res.status(400);
+    throw new Error('User not found');
+  }
+  if (!sellerFromDB) {
+    res.status(400);
+    throw new Error('Seller not found');
+  }
+
+  // Validate Purchase Price
+  const sellerAskPrice = sellerFromDB.currentAsks.find(
+    (ask) => ask.askId === askId
+  )?.price;
+  if (!sellerAskPrice) {
+    res.status(400);
+    throw new Error('Ask for this price not found');
+  } else if (sellerAskPrice !== purchasePrice) {
+    res.status(400);
+    throw new Error(
+      'Purchase price is not equal to lowest ask price for this size'
+    );
+  }
+
+  // Calculate Total Price
+  const { totalPrice } = calcBidPrices(purchasePrice);
+
+  // Verify Payment
+  const { verified, value } = await verifyPayPalPayment(paymentId);
+  if (!verified) throw new Error('Payment not verified');
+  // const isNewTransaction = await checkIfNewTransaction(Order, paymentId);
+  // if (!isNewTransaction) throw new Error('Transaction has been used before');
+  if (totalPrice !== value) throw new Error('Incorrect amount paid');
+
+  // Delete ask from Item Asks
+  const productAsksBySize = itemFromDB.sizes.get(size).asks;
+  const position = productAsksBySize.findIndex((ask) => ask.offerId === askId);
+  productAsksBySize.splice(position, 1);
+
+  // Update Buyer's Bids
+  buyerFromDB.pendingBids.unshift({
+    seller: sellerFromDB,
+    price: purchasePrice,
+    size,
+    productIdentifier: itemFromDB.productIdentifier,
+    shippingInfo,
+    paymentMethod,
+    bidId: askId,
+  });
+
+  // Update Seller's asks
+  const sellerCurrentAsks = sellerFromDB.currentAsks;
+  const deletePosition = sellerCurrentAsks.findIndex(
+    (ask) => ask.askId === askId
+  );
+  sellerFromDB.pendingAsks.unshift({
+    buyer: buyerFromDB,
+    price: purchasePrice,
+    size,
+    productIdentifier: itemFromDB.productIdentifier,
+    returnShippingInfo: sellerCurrentAsks[deletePosition].returnShippingInfo,
+    payoutMethod: sellerCurrentAsks[deletePosition].payoutMethod,
+    askId,
+  });
+  sellerCurrentAsks.splice(deletePosition, 1);
+
+  await itemFromDB.save();
+  await buyerFromDB.save();
+  await sellerFromDB.save();
+
+  res.status(201).json({ message: 'Purchase Made Successfully' });
 });
 
 export {
@@ -346,4 +453,5 @@ export {
   getLatestProducts,
   placeAsk,
   placeBid,
+  purchaseNow,
 };

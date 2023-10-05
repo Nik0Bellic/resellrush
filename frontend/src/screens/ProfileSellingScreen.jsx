@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Message from '../components/Message';
 import CurrentUserAsksTable from '../components/CurrentUserAsksTable';
 import PendingUserAsksTable from '../components/PendingUserAsksTable';
+import HistoryUserAsksTable from '../components/HistoryUserAsksTable';
 
 const Selling = () => {
   const [selectedSum, setSelectedSum] = useState(0);
@@ -111,11 +112,13 @@ const Selling = () => {
           </div>
         )}
       </div>
-      {sellingType === 'pending' ? (
+      {sellingType === 'current' ? (
+        <CurrentUserAsksTable setSelectedSum={setSelectedSum} />
+      ) : sellingType === 'pending' ? (
         <PendingUserAsksTable />
       ) : (
-        sellingType === 'current' && (
-          <CurrentUserAsksTable setSelectedSum={setSelectedSum} />
+        sellingType === 'history' && (
+          <HistoryUserAsksTable setSelectedSum={setSelectedSum} />
         )
       )}
     </>

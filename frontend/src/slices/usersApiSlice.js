@@ -84,6 +84,12 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       }),
       keepUnusedDataFor: 5,
     }),
+    getMyHistoryAsks: builder.query({
+      query: () => ({
+        url: `${USERS_URL}/asks/history`,
+      }),
+      keepUnusedDataFor: 5,
+    }),
     getMyCurrentBids: builder.query({
       query: () => ({
         url: `${USERS_URL}/bids/current`,
@@ -93,6 +99,12 @@ export const usersApiSlice = apiSlice.injectEndpoints({
     getMyPendingBids: builder.query({
       query: () => ({
         url: `${USERS_URL}/bids/pending`,
+      }),
+      keepUnusedDataFor: 5,
+    }),
+    getMyHistoryBids: builder.query({
+      query: () => ({
+        url: `${USERS_URL}/bids/history`,
       }),
       keepUnusedDataFor: 5,
     }),
@@ -111,7 +123,9 @@ export const {
   useUpdateShippingInfoMutation,
   useUpdatePayMethodMutation,
   useGetMyCurrentAsksQuery,
-  useGetMyCurrentBidsQuery,
   useGetMyPendingAsksQuery,
+  useGetMyHistoryAsksQuery,
+  useGetMyCurrentBidsQuery,
   useGetMyPendingBidsQuery,
+  useGetMyHistoryBidsQuery,
 } = usersApiSlice;

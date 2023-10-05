@@ -6,7 +6,12 @@ const router = express.Router();
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    cb(null, 'uploads');
+    let uploadPath = 'uploads';
+    if (req.uploadType === 'shippingService') {
+      uploadPath = 'uploads/shippingService';
+    }
+
+    cb(null, uploadPath);
   },
   filename(req, file, cb) {
     cb(
@@ -30,10 +35,17 @@ function fileFilter(req, file, cb) {
   }
 }
 
+function setUploadType(req, res, next) {
+  if (req.headers['upload-type'] === 'shippingService') {
+    req.uploadType = 'shippingService';
+  }
+  next();
+}
+
 const upload = multer({ storage, fileFilter });
 const uploadSingleImage = upload.single('image');
 
-router.post('/', (req, res) => {
+router.post('/', setUploadType, (req, res) => {
   uploadSingleImage(req, res, function (err) {
     if (err) {
       return res.status(400).send({ message: err.message });

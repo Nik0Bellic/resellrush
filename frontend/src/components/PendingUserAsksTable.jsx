@@ -44,25 +44,31 @@ const PendingUserAsksTable = () => {
     ),
     columnHelper.accessor((row) => row.price, {
       id: 'price',
-      header: 'Purchase Price',
+      header: 'Price',
       cell: (info) => <div className='font-bold'>${info.getValue()}</div>,
     }),
-    columnHelper.accessor((row) => row.status, {
-      id: 'status',
-      header: 'Status',
-      cell: (info) => (
-        <div className='flex flex-col justify-between items-end h-24 py-2'>
-          <div>{info.getValue()}</div>
-          <Link
-            className='flex items-center hover:text-strongYellow'
-            to={`/order/${info.row.original._id}`}
-          >
-            <span>Details</span>
-            <FaArrowRightLong className='ml-2 hidden sm:inline' />
-          </Link>
-        </div>
-      ),
-    }),
+    columnHelper.accessor(
+      (row) => ({
+        status: row.status,
+        askId: row.askId,
+      }),
+      {
+        id: 'status',
+        header: 'Status',
+        cell: (info) => (
+          <div className='flex flex-col justify-between items-end h-24 py-2'>
+            <div>{info.getValue()?.status}</div>
+            <Link
+              className='flex items-center hover:text-strongYellow'
+              to={`/deal/${info.getValue()?.askId}`}
+            >
+              <span>Details</span>
+              <FaArrowRightLong className='ml-2 hidden sm:inline' />
+            </Link>
+          </div>
+        ),
+      }
+    ),
   ];
 
   const table = useReactTable({

@@ -239,6 +239,39 @@ const getMyPendingAsks = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get logged in user history asks
+// @route   GET /api/users/asks/history
+// @access  Private
+const getMyHistoryAsks = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (user) {
+    const rowHistoryAsks = user.historyAsks;
+
+    const historyAsks = await Promise.all(
+      rowHistoryAsks.map(async (ask) => {
+        const product = await Product.findOne({
+          productIdentifier: ask.productIdentifier,
+        });
+        if (!product) {
+          throw new Error(`Product not found`);
+        }
+
+        return {
+          ...ask._doc,
+          productName: product.name,
+          productColor: product.color,
+          productImage: product.image,
+        };
+      })
+    );
+
+    res.status(200).json(historyAsks);
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
 // @desc    Get logged in user current bids
 // @route   GET /api/users/bids/current
 // @access  Private
@@ -301,6 +334,39 @@ const getMyPendingBids = asyncHandler(async (req, res) => {
     );
 
     res.status(200).json(pendingBids);
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+// @desc    Get logged in user history bids
+// @route   GET /api/users/bids/history
+// @access  Private
+const getMyHistoryBids = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (user) {
+    const rowHistoryBids = user.historyBids;
+
+    const historyBids = await Promise.all(
+      rowHistoryBids.map(async (bid) => {
+        const product = await Product.findOne({
+          productIdentifier: bid.productIdentifier,
+        });
+        if (!product) {
+          throw new Error(`Product not found`);
+        }
+
+        return {
+          ...bid._doc,
+          productName: product.name,
+          productColor: product.color,
+          productImage: product.image,
+        };
+      })
+    );
+
+    res.status(200).json(historyBids);
   } else {
     res.status(404);
     throw new Error('User not found');
@@ -387,8 +453,10 @@ export {
   updatePayMethod,
   getMyCurrentAsks,
   getMyPendingAsks,
+  getMyHistoryAsks,
   getMyCurrentBids,
   getMyPendingBids,
+  getMyHistoryBids,
   getUsers,
   deleteUser,
   getUserById,

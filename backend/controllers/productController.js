@@ -1,4 +1,5 @@
 import asyncHandler from '../middleware/asyncHandler.js';
+import Deal from '../models/dealModel.js';
 import Product from '../models/productModel.js';
 import User from '../models/userModel.js';
 import { calcBidPrices } from '../utils/calcPrices.js';
@@ -273,11 +274,12 @@ const saleNow = asyncHandler(async (req, res) => {
     size,
     salePrice,
     returnShippingInfo,
+    payoutMethod,
   } = req.body;
 
   // Verify Product and User
   const itemFromDB = await Product.findById(itemFromClient._id);
-  const buyerFromDB = await User.findById(buyerFromClient._id);
+  const buyerFromDB = await User.findById(buyerFromClient);
   const sellerFromDB = await User.findById(sellerFromClientId);
   if (!itemFromDB) {
     res.status(400);
@@ -327,17 +329,34 @@ const saleNow = asyncHandler(async (req, res) => {
   const deletePosition = buyerCurrentBids.findIndex(
     (bid) => bid.bidId === bidId
   );
+  const shippingInfo = buyerCurrentBids[deletePosition].shippingInfo;
+  const paymentMethod = buyerCurrentBids[deletePosition].paymentMethod;
   buyerFromDB.pendingBids.unshift({
     seller: sellerFromDB,
     price: salePrice,
     size,
     productIdentifier: itemFromDB.productIdentifier,
-    shippingInfo: buyerCurrentBids[deletePosition].shippingInfo,
-    paymentMethod: buyerCurrentBids[deletePosition].paymentMethod,
+    shippingInfo,
+    paymentMethod,
     bidId,
   });
   buyerCurrentBids.splice(deletePosition, 1);
 
+  // Create Deal
+  const deal = new Deal({
+    dealItem: { ...itemFromDB },
+    size,
+    buyer: buyerFromDB,
+    seller: sellerFromDB,
+    shippingInfo,
+    returnShippingInfo,
+    paymentMethod,
+    payoutMethod,
+    price: salePrice,
+    offerId: bidId,
+  });
+
+  await deal.save();
   await itemFromDB.save();
   await buyerFromDB.save();
   await sellerFromDB.save();
@@ -388,7 +407,7 @@ const placeBid = asyncHandler(async (req, res) => {
   // Verify Payment
   const { verified, value } = await verifyPayPalPayment(paymentId);
   if (!verified) throw new Error('Payment not verified');
-  // const isNewTransaction = await checkIfNewTransaction(Order, paymentId);
+  // const isNewTransaction = await checkIfNewTransaction(Deal, paymentId);
   // if (!isNewTransaction) throw new Error('Transaction has been used before');
   if (totalPrice !== value) throw new Error('Incorrect amount paid');
 
@@ -485,7 +504,7 @@ const purchaseNow = asyncHandler(async (req, res) => {
   // Verify Payment
   const { verified, value } = await verifyPayPalPayment(paymentId);
   if (!verified) throw new Error('Payment not verified');
-  // const isNewTransaction = await checkIfNewTransaction(Order, paymentId);
+  // const isNewTransaction = await checkIfNewTransaction(Deal, paymentId);
   // if (!isNewTransaction) throw new Error('Transaction has been used before');
   if (totalPrice !== value) throw new Error('Incorrect amount paid');
 
@@ -510,16 +529,35 @@ const purchaseNow = asyncHandler(async (req, res) => {
   const deletePosition = sellerCurrentAsks.findIndex(
     (ask) => ask.askId === askId
   );
+  const returnShippingInfo =
+    sellerCurrentAsks[deletePosition].returnShippingInfo;
+  const payoutMethod = sellerCurrentAsks[deletePosition].payoutMethod;
   sellerFromDB.pendingAsks.unshift({
     buyer: buyerFromDB,
     price: purchasePrice,
     size,
     productIdentifier: itemFromDB.productIdentifier,
-    returnShippingInfo: sellerCurrentAsks[deletePosition].returnShippingInfo,
-    payoutMethod: sellerCurrentAsks[deletePosition].payoutMethod,
+    returnShippingInfo,
+    payoutMethod,
     askId,
   });
   sellerCurrentAsks.splice(deletePosition, 1);
+
+  // Create Deal
+  const deal = new Deal({
+    dealItem: { ...itemFromDB },
+    size,
+    buyer: buyerFromDB,
+    seller: sellerFromDB,
+    shippingInfo,
+    returnShippingInfo,
+    paymentMethod,
+    payoutMethod,
+    price: purchasePrice,
+    offerId: askId,
+  });
+
+  await deal.save();
 
   await itemFromDB.save();
   await buyerFromDB.save();

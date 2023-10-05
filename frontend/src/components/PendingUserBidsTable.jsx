@@ -47,22 +47,28 @@ const PendingUserBidsTable = () => {
       header: 'Purchase Price',
       cell: (info) => <div className='font-bold'>${info.getValue()}</div>,
     }),
-    columnHelper.accessor((row) => row.status, {
-      id: 'status',
-      header: 'Status',
-      cell: (info) => (
-        <div className='flex flex-col justify-between items-end h-24 py-2'>
-          <div>{info.getValue()}</div>
-          <Link
-            className='flex items-center hover:text-strongYellow'
-            to={`/order/${info.row.original._id}`}
-          >
-            <span>Details</span>
-            <FaArrowRightLong className='ml-2 hidden sm:inline' />
-          </Link>
-        </div>
-      ),
-    }),
+    columnHelper.accessor(
+      (row) => ({
+        status: row.status,
+        bidId: row.bidId,
+      }),
+      {
+        id: 'status',
+        header: 'Status',
+        cell: (info) => (
+          <div className='flex flex-col justify-between items-end h-24 py-2'>
+            <div>{info.getValue()}</div>
+            <Link
+              className='flex items-center hover:text-strongYellow'
+              to={`/deal/${info.getValue()?.bidId}`}
+            >
+              <span>Details</span>
+              <FaArrowRightLong className='ml-2 hidden sm:inline' />
+            </Link>
+          </div>
+        ),
+      }
+    ),
   ];
 
   const table = useReactTable({

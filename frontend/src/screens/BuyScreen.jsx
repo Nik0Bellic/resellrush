@@ -7,7 +7,6 @@ import Message from '../components/Message';
 import { useGetProductDetailsQuery } from '../slices/productsApiSlice';
 import { setAuthModalActive } from '../slices/authSlice';
 import { createBid } from '../slices/bidSlice';
-// import { addToOrder } from '../slices/orderSlice';
 import { setSizesModalActive } from '../slices/sizeSlice';
 
 const BuyScreen = () => {

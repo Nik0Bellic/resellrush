@@ -39,23 +39,23 @@ async function getPayPalAccessToken() {
 }
 
 /**
- * Checks if a PayPal transaction is new by comparing the transaction ID with existing orders in the database.
+ * Checks if a PayPal transaction is new by comparing the transaction ID with existing deals in the database.
  *
- * @param {Mongoose.Model} orderModel - The Mongoose model for the orders in the database.
+ * @param {Mongoose.Model} dealModel - The Mongoose model for the deals in the database.
  * @param {string} paypalTransactionId - The PayPal transaction ID to be checked.
  * @returns {Promise<boolean>} Returns true if it is a new transaction (i.e., the transaction ID does not exist in the database), false otherwise.
  * @throws {Error} If there's an error in querying the database.
  *
  */
-export async function checkIfNewTransaction(orderModel, paypalTransactionId) {
+export async function checkIfNewTransaction(dealModel, paypalTransactionId) {
   try {
-    // Find all documents where Order.paymentResult.id is the same as the id passed paypalTransactionId
-    const orders = await orderModel.find({
+    // Find all documents where Deal.paymentResult.id is the same as the id passed paypalTransactionId
+    const deals = await dealModel.find({
       'paymentResult.id': paypalTransactionId,
     });
 
-    // If there are no such orders, then it's a new transaction.
-    return orders.length === 0;
+    // If there are no such deals, then it's a new transaction.
+    return deals.length === 0;
   } catch (err) {
     console.error(err);
   }

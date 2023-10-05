@@ -66,7 +66,7 @@ export const productsApiSlice = apiSlice.injectEndpoints({
     }),
     saleNow: builder.mutation({
       query: (data) => ({
-        url: `${PRODUCTS_URL}/${data.buyItem.productIdentifier}/sale`,
+        url: `${PRODUCTS_URL}/${data.sellItem.productIdentifier}/sale`,
         method: 'POST',
         body: data,
       }),

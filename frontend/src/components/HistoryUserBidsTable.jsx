@@ -7,14 +7,14 @@ import {
 } from '@tanstack/react-table';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
-import { useGetMyCurrentBidsQuery } from '../slices/usersApiSlice';
+import { useGetMyHistoryBidsQuery } from '../slices/usersApiSlice';
 
-const CurrentUserBidsTable = ({ setSelectedSum }) => {
+const HistoryUserBidsTable = ({ setSelectedSum }) => {
   const {
-    data: currentBids = [],
+    data: historyBids = [],
     isLoading,
     error,
-  } = useGetMyCurrentBidsQuery();
+  } = useGetMyHistoryBidsQuery();
 
   const [rowSelection, setRowSelection] = useState({});
 
@@ -23,7 +23,7 @@ const CurrentUserBidsTable = ({ setSelectedSum }) => {
   const columns = [
     columnHelper.accessor((row) => row.productImage, {
       id: 'image',
-      cell: (info) => <img src={info.getValue()} alt='Bid Item' width='100' />,
+      cell: (info) => <img src={info.getValue()} alt='Ask Item' width='100' />,
       header: '',
     }),
     columnHelper.accessor(
@@ -43,19 +43,17 @@ const CurrentUserBidsTable = ({ setSelectedSum }) => {
         ),
       }
     ),
-    columnHelper.accessor((row) => row.currentHighestBid, {
-      id: 'highestBid',
-      header: 'Current Highest Bid',
+    columnHelper.accessor((row) => row.createdAt, {
+      id: 'date',
+      header: 'Date',
       cell: (info) => (
-        <div className='font-bold text-center'>${info.getValue()}</div>
+        <div className='font-bold'>{info.getValue().substring(0, 10)}</div>
       ),
     }),
     columnHelper.accessor((row) => row.price, {
       id: 'price',
-      header: 'My Bid',
-      cell: (info) => (
-        <div className='font-bold text-center'>${info.getValue()}</div>
-      ),
+      header: 'Price',
+      cell: (info) => <div className='font-bold'>${info.getValue()}</div>,
     }),
     {
       id: 'selection',
@@ -87,8 +85,8 @@ const CurrentUserBidsTable = ({ setSelectedSum }) => {
   ];
 
   const table = useReactTable({
-    data: currentBids,
-    columns: columns,
+    data: historyBids,
+    columns,
     state: {
       rowSelection,
     },
@@ -113,12 +111,12 @@ const CurrentUserBidsTable = ({ setSelectedSum }) => {
         <Loader />
       ) : error ? (
         <Message variant='Error' text={error?.data?.message || error.error} />
-      ) : currentBids.length === 0 ? (
+      ) : historyBids.length === 0 ? (
         <div className='mt-8 lg:mt-12 text-xl flex w-full justify-center'>
-          You have no current bids
+          You have no history bids
         </div>
       ) : (
-        <div className='mt-8 lg:mt-12'>
+        <div className='mt-8'>
           <table className='min-w-full bg-transparent'>
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -129,9 +127,7 @@ const CurrentUserBidsTable = ({ setSelectedSum }) => {
                       style={
                         header.id === 'selection'
                           ? { textAlign: 'right' }
-                          : header.id === 'Item'
-                          ? { textAlign: 'left' }
-                          : { textAlign: 'center' }
+                          : { textAlign: 'left' }
                       }
                     >
                       {header.isPlaceholder
@@ -173,4 +169,4 @@ const CurrentUserBidsTable = ({ setSelectedSum }) => {
   );
 };
 
-export default CurrentUserBidsTable;
+export default HistoryUserBidsTable;

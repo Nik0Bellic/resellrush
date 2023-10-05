@@ -7,7 +7,7 @@ import connectDB from './config/db.js';
 import { notFound, errorHanlder } from './middleware/errorMiddleware.js';
 import productRoutes from './routes/productRoutes.js';
 import userRoutes from './routes/userRoutes.js';
-import orderRoutes from './routes/orderRoutes.js';
+import dealRoutes from './routes/dealRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 const port = process.env.PORT || 4000;
 
@@ -28,7 +28,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/orders', orderRoutes);
+app.use('/api/deals', dealRoutes);
 app.use('/api/upload', uploadRoutes);
 
 app.get('/api/config/paypal', (req, res) =>

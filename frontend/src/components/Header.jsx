@@ -7,7 +7,6 @@ import { useLogoutMutation } from '../slices/usersApiSlice';
 import { logout } from '../slices/authSlice';
 import { setAuthModalActive } from '../slices/authSlice';
 import { resetFavorites } from '../slices/favoritesSlice';
-import { resetOrder } from '../slices/orderSlice';
 
 const Header = () => {
   const [isActive, setIsActive] = useState(false);
@@ -43,7 +42,6 @@ const Header = () => {
       await logoutApiCall().unwrap();
       dispatch(logout());
       dispatch(resetFavorites());
-      dispatch(resetOrder());
       navigate('/');
     } catch (err) {
       console.log(err);
@@ -169,11 +167,11 @@ const Header = () => {
                             Users
                           </Link>
                           <Link
-                            to='/admin/orderList'
+                            to='/admin/dealList'
                             className='hover:px-3 hover:py-2 xl:hover:px-7 xl:hover:py-2.5 w-min text-orange-500
             outline-black rounded-full hover:bg-strongYellow hover:outline hover:scale-110 duration-200'
                           >
-                            Orders
+                            Deals
                           </Link>
                         </>
                       )}
@@ -329,11 +327,11 @@ const Header = () => {
                           Users
                         </Link>
                         <Link
-                          to='/admin/orderList'
+                          to='/admin/dealList'
                           className='hover:px-3 hover:py-2 text-orange-500
                     outline-black rounded-full hover:bg-strongYellow hover:outline hover:scale-110 duration-200'
                         >
-                          Orders
+                          Deals
                         </Link>
                       </>
                     )}

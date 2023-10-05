@@ -105,7 +105,7 @@ const CurrentUserAsksTable = ({ setSelectedSum }) => {
 
   useEffect(() => {
     setSelectedSum(calculateSelectedSum());
-  }, [table, setSelectedSum, calculateSelectedSum]);
+  }, [table, setSelectedSum, calculateSelectedSum, rowSelection]);
 
   return (
     <>

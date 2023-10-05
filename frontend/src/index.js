@@ -25,9 +25,8 @@ import BuyScreen from './screens/BuyScreen';
 import PlaceBidScreen from './screens/PlaceBidScreen';
 import SellScreen from './screens/SellScreen';
 import PlaceAskScreen from './screens/PlaceAskScreen';
-import ShippingScreen from './screens/ShippingScreen';
-import OrderScreen from './screens/OrderScreen';
-import OrderListScreen from './screens/admin/OrderListScreen';
+import DealListScreen from './screens/admin/DealListScreen';
+import DealScreen from './screens/DealScreen';
 import ProductListScreen from './screens/admin/ProductListScreen';
 import ProductCreateScreen from './screens/admin/ProductCreateScreen';
 import ProductEditScreen from './screens/admin/ProductEditScreen';
@@ -49,9 +48,8 @@ const router = createBrowserRouter(
       <Route path='/favorites' element={<FavoritesScreen />} />
 
       <Route path='' element={<PrivateRoute />}>
-        <Route path='/buy/:productId/shipping' element={<ShippingScreen />} />
         <Route path='/buy/:productId/placeBid' element={<PlaceBidScreen />} />
-        <Route path='/order/:id' element={<OrderScreen />} />
+        <Route path='/deal/:id' element={<DealScreen />} />
         <Route path='/profile' element={<ProfileScreen />} />
         <Route path='/profile/buying' element={<ProfileBuyingScreen />} />
         <Route path='/profile/selling' element={<ProfileSellingScreen />} />
@@ -63,7 +61,7 @@ const router = createBrowserRouter(
       </Route>
 
       <Route path='' element={<AdminRoute />}>
-        <Route path='/admin/orderList' element={<OrderListScreen />} />
+        <Route path='/admin/dealList' element={<DealListScreen />} />
         <Route path='/admin/productList' element={<ProductListScreen />} />
         <Route
           path='/admin/productList/:pageNumber'

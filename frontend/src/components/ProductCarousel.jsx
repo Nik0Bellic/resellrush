@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import Loader from './Loader';
 import Message from './Message';
 import { useGetLatestProductsQuery } from '../slices/productsApiSlice';
 import { BsChevronLeft, BsChevronRight } from 'react-icons/bs';
@@ -49,7 +50,9 @@ const ProductCarousel = () => {
     };
   }, [products, isMouseOver, nextSlide]);
 
-  return isLoading ? null : error ? (
+  return isLoading ? (
+    <Loader />
+  ) : error ? (
     <Message variant='Error' text={error?.data?.message || error.error} />
   ) : (
     <div

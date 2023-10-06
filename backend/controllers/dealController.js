@@ -112,12 +112,10 @@ const updateDealToVerified = asyncHandler(async (req, res) => {
     if (addPosition === -1) {
       productLastSales.push({
         price: askForDelete.price,
-        size: askForDelete.size,
       });
     } else {
       productLastSales.splice(addPosition, 0, {
         price: askForDelete.price,
-        size: askForDelete.size,
       });
     }
     // Remove from seller pending asks

@@ -1,9 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import AsksPopup from '../components/AsksPopup';
+import BidsPopup from '../components/BidsPopup';
+import LastSalesPopup from '../components/LastSalesPopup';
 import SizesPopup from '../components/SizesPopup';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import Meta from '../components/Meta';
+import SalesChart from '../components/SalesChart';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetProductDetailsQuery } from '../slices/productsApiSlice';
 import { toggleFavorite } from '../slices/favoritesSlice';
@@ -11,6 +15,10 @@ import { setSizesModalActive } from '../slices/sizeSlice';
 
 const ProductScreen = () => {
   const [isReadMore, setIsReadMore] = useState(true);
+
+  const [asksModalActive, setAsksModalActive] = useState(false);
+  const [bidsModalActive, setBidsModalActive] = useState(false);
+  const [lastSalesModalActive, setLastSalesModalActive] = useState(false);
 
   const [sizes, setSizes] = useState([]);
   const { selectedSize } = useSelector((state) => state.size);
@@ -229,15 +237,39 @@ const ProductScreen = () => {
                   <div className='fullWidthBorder md:hidden'></div>
                 </div>
                 <div className='w-full col-span-2 container mx-auto grid grid-cols-2 gap-3 sm:gap-4 md:px-0 py-6 text-lg sm:text-xl md:text-lg'>
-                  <div className='border-2 border-black px-2 py-1 sm:py-1.5 rounded-full flex justify-center items-center'>
+                  <button
+                    type='button'
+                    onClick={() =>
+                      selectedSize
+                        ? setAsksModalActive(true)
+                        : dispatch(setSizesModalActive(true))
+                    }
+                    className='border-2 border-black px-2 py-1 sm:py-1.5 rounded-full flex justify-center items-center'
+                  >
                     View Asks
-                  </div>
-                  <div className='border-2 border-black px-2 py-1 sm:py-1.5 rounded-full flex justify-center items-center'>
+                  </button>
+                  <button
+                    type='button'
+                    onClick={() =>
+                      selectedSize
+                        ? setBidsModalActive(true)
+                        : dispatch(setSizesModalActive(true))
+                    }
+                    className='border-2 border-black px-2 py-1 sm:py-1.5 rounded-full flex justify-center items-center'
+                  >
                     View Bids
-                  </div>
-                  <div className='col-span-2 border-2 border-black px-2 py-1 sm:py-1.5 rounded-full flex justify-center items-center'>
+                  </button>
+                  <button
+                    type='button'
+                    onClick={() =>
+                      selectedSize
+                        ? setLastSalesModalActive(true)
+                        : dispatch(setSizesModalActive(true))
+                    }
+                    className='col-span-2 border-2 border-black px-2 py-1 sm:py-1.5 rounded-full flex justify-center items-center'
+                  >
                     View Sales
-                  </div>
+                  </button>
                 </div>
               </div>
             </div>
@@ -304,7 +336,24 @@ const ProductScreen = () => {
             </div>
           </div>
           <div className='fullWidthBorder'></div>
+          <SalesChart productId={productId} />
+
           <SizesPopup sizes={sizes} handleSizeChoice={handleSizeChoice} />
+          <AsksPopup
+            productId={productId}
+            asksModalActive={asksModalActive}
+            setAsksModalActive={setAsksModalActive}
+          />
+          <BidsPopup
+            productId={productId}
+            bidsModalActive={bidsModalActive}
+            setBidsModalActive={setBidsModalActive}
+          />
+          <LastSalesPopup
+            productId={productId}
+            lastSalesModalActive={lastSalesModalActive}
+            setLastSalesModalActive={setLastSalesModalActive}
+          />
         </>
       )}
     </>

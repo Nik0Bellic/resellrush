@@ -25,7 +25,7 @@ const Header = () => {
 
   const mobileSearchHandler = (e) => {
     e.preventDefault();
-    if (!urlKeyword || keyword) {
+    if (keyword) {
       if (keyword.trim()) {
         setKeyword('');
         navigate(`/search/${keyword}`);

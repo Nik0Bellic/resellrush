@@ -9,6 +9,7 @@ import User from './models/userModel.js';
 import Product from './models/productModel.js';
 import Deal from './models/dealModel.js';
 import connectDB from './config/db.js';
+import lastSales from './data/lastSales.js';
 
 dotenv.config();
 
@@ -54,6 +55,13 @@ const importData = async () => {
 
     const createdProducts = await Product.insertMany(sampleProducts);
 
+    for (const sale of lastSales) {
+      const randomProduct =
+        createdProducts[Math.floor(Math.random() * createdProducts.length)];
+      const productSalesBySize = randomProduct.sizes.get('7').lastSales;
+      productSalesBySize.push({ ...sale });
+    }
+
     const shippingInfo = {
       shippingService: 'DHL',
       firstName: 'John',
@@ -66,7 +74,8 @@ const importData = async () => {
       shippingComments: '',
     };
 
-    const payMethod = 'Paypal';
+    const paymentMethod = 'Paypal';
+    const payoutMethod = 'card';
 
     for (const ask of asks) {
       const randomUser =
@@ -78,7 +87,7 @@ const importData = async () => {
         ...ask,
         productIdentifier: randomProduct.productIdentifier,
         returnShippingInfo: shippingInfo,
-        payoutMethod: payMethod,
+        payoutMethod,
       });
 
       const { size, ...askWithoutSize } = ask;
@@ -115,7 +124,7 @@ const importData = async () => {
         ...bid,
         productIdentifier: randomProduct.productIdentifier,
         shippingInfo,
-        paymentMethod: payMethod,
+        paymentMethod,
       });
 
       const { size, ...bidWithoutSize } = bid;

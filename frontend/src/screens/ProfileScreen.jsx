@@ -7,6 +7,7 @@ import { useProfileMutation } from '../slices/usersApiSlice';
 import { setCredentials } from '../slices/authSlice';
 import { FiEdit } from 'react-icons/fi';
 import { AiOutlineCheck } from 'react-icons/ai';
+import { VscError } from 'react-icons/vsc';
 
 const ProfileScreen = () => {
   const [changeEnabled, setChangeEnabled] = useState(false);
@@ -165,7 +166,7 @@ const ProfileScreen = () => {
             }`}
           />
         </div>
-        {userInfo.isSeller && (
+        {userInfo.isSeller ? (
           <div className='w-min mt-2 flex items-center border-2 border-[#1ba97c] rounded-full py-2 px-5 bg-[#1ba97c] bg-opacity-20 text-xl'>
             <AiOutlineCheck
               className='mr-2'
@@ -173,6 +174,28 @@ const ProfileScreen = () => {
               strokeWidth='150'
             />
             <div className='text-[#1ba97c] font-semibold'>Seller</div>
+          </div>
+        ) : (
+          <div className='mt-10 flex space-x-5 col-span-2 md:col-span-3'>
+            <div className='w-min h-min flex items-center border-2 border-[#ff5757] rounded-full py-2 px-5 bg-[#ff5757] bg-opacity-20 text-lg'>
+              <VscError color='#ff5757' strokeWidth='0.4' className='mr-2' />
+              <div className='text-[#ff5757] font-semibold whitespace-nowrap'>
+                Not Seller
+              </div>
+            </div>
+            <div>
+              To activate selling on Resell Rush, please{' '}
+              <a
+                href={`mailto:resellrush@outlook.com?Subject=Seller Verification ${userInfo.firstName} ${userInfo.lastName}`}
+                className='text-strongYellow'
+              >
+                send us
+              </a>{' '}
+              a photo of your passport, ensuring the name matches the one listed
+              in your Resell Rush profile. Additionally, provide your card
+              number for payouts. Ensure that the email is sent from the address
+              associated with your Resell Rush account.
+            </div>
           </div>
         )}
       </div>

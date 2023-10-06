@@ -1,18 +1,15 @@
-import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import {
   useGetDealDetailsQuery,
-  useUploadShippingImageMutation,
   useUpdateDealToSentBySellerMutation,
   useUpdateDealToVerificationInProgressMutation,
   useUpdateDealToVerifiedMutation,
   useUpdateDealToSentToBuyerMutation,
   useUpdateDealToShippedMutation,
 } from '../slices/dealsApiSlice';
-import Dropzone from 'react-dropzone';
 
 const DealScreen = () => {
   const { userInfo } = useSelector((state) => state.auth);
@@ -26,15 +23,6 @@ const DealScreen = () => {
     error,
   } = useGetDealDetailsQuery(dealId);
 
-  const [shippingImage, setShippingImage] = useState('');
-
-  const [file, setFile] = useState(null);
-
-  const [uploadShippingImage, { isLoading: loadingUpload }] =
-    useUploadShippingImageMutation();
-  const [imageUploaded, setImageUploaded] = useState(false);
-  const [imageUploadError, setImageUploadError] = useState('');
-
   const [updateDealToSentBySeller, { isLoading: loadingBySeller }] =
     useUpdateDealToSentBySellerMutation();
   const [
@@ -47,48 +35,6 @@ const DealScreen = () => {
     useUpdateDealToSentToBuyerMutation();
   const [updateDealToShipped, { isLoading: loadingShipped }] =
     useUpdateDealToShippedMutation();
-
-  useEffect(() => {
-    return () => {
-      if (shippingImage) {
-        URL.revokeObjectURL(shippingImage);
-      }
-    };
-  }, [shippingImage]);
-
-  const handleDrop = (acceptedFiles) => {
-    const file = acceptedFiles[0];
-    const fileType = file.type;
-
-    if (/image\/jpe?g|image\/png|image\/webp/.test(fileType)) {
-      setFile(file);
-      setShippingImage(URL.createObjectURL(file));
-      setImageUploadError('');
-    } else {
-      setImageUploadError(
-        'Please upload a valid image file (jpg, jpeg, png, webp).'
-      );
-    }
-  };
-
-  const handleUpload = async () => {
-    if (!file) {
-      setImageUploadError('Please select an image to upload.');
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('image', file);
-
-    try {
-      await uploadShippingImage(formData);
-      await updateDealToSentBySeller(deal.offerId);
-      refetch();
-      setImageUploaded(true);
-    } catch (error) {
-      setImageUploadError(error.message || 'Failed to upload image.');
-    }
-  };
 
   return isLoading ? (
     <Loader />
@@ -132,56 +78,39 @@ const DealScreen = () => {
             </div>
 
             <div className='pt-8 lg:pt-10 flex flex-col space-y-3 lg:space-y-4 w-full'>
-              {loadingUpload && <Loader />}
+              {userInfo && userInfo._id === deal.seller && (
+                <div>
+                  To verify that you've dispatched the item you must{' '}
+                  <a
+                    href={`mailto:resellrush@outlook.com?Subject=Ticket Receipt ${deal.offerId}`}
+                    className='text-strongYellow'
+                  >
+                    send us
+                  </a>{' '}
+                  the shipping receipt within 48 hours of your ask being
+                  matched. Ensure the receipt displays the Resell Rush
+                  Verification address and matches the name in your Resell Rush
+                  profile. The email containing the receipt must be sent from
+                  the email address associated with your Resell Rush profile.
+                  Failure to comply may result in penalty fees or account
+                  restrictions.
+                </div>
+              )}
+
               {loadingBySeller && <Loader />}
 
-              {userInfo && userInfo._id === deal.seller && (
-                <>
-                  {imageUploaded && (
-                    <Message
-                      variant='Success'
-                      text='Shipping Ticket Uploaded Successfully'
-                      small={true}
-                    />
-                  )}
-                  {deal.status === 'Matched' && (
-                    <>
-                      <div className='font-semibold lg:text-lg'>
-                        Upload Shipping Service Ticket
-                      </div>
-                      <Dropzone onDrop={handleDrop}>
-                        {({ getRootProps, getInputProps }) => (
-                          <section>
-                            <div {...getRootProps()}>
-                              <input {...getInputProps()} />
-                              <p className='border-2 border-black rounded-lg py-16 text-center cursor-pointer'>
-                                Drag Image or Click to Browse
-                              </p>
-                            </div>
-                          </section>
-                        )}
-                      </Dropzone>
-                    </>
-                  )}
-                  {deal.status === 'Matched' && shippingImage && (
-                    <>
-                      <img src={shippingImage} alt='Shipping Ticket' />
-                      <button
-                        className='border-2 border-black rounded-full px-5 py-2 hover:border-strongYellow hover:scale-105 duration-200 w-min whitespace-nowrap'
-                        onClick={handleUpload}
-                      >
-                        Upload Shipping Ticket
-                      </button>
-                    </>
-                  )}
-                  {imageUploadError && (
-                    <Message
-                      variant='Error'
-                      text={imageUploadError}
-                      small={true}
-                    />
-                  )}
-                </>
+              {userInfo && userInfo.isAdmin && deal.status === 'Matched' && (
+                <button
+                  type='button'
+                  className='px-3 py-2 text-black
+                  border-orange-600 border-2 rounded-lg hover:bg-strongYellow hover:border hover:scale-110 duration-200 w-full'
+                  onClick={async () => {
+                    await updateDealToSentBySeller(deal.offerId);
+                    refetch();
+                  }}
+                >
+                  Update Deal Status To Sent By Seller
+                </button>
               )}
 
               {loadingVerification && <Loader />}

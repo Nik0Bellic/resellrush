@@ -33,6 +33,20 @@ const columns = [
     header: 'Email',
     cell: (info) => <a href={`mailto:${info.getValue()}`}>{info.getValue()}</a>,
   }),
+  columnHelper.accessor((row) => row.isSeller, {
+    id: 'seller',
+    header: 'Seller',
+    cell: (info) =>
+      info.getValue() ? (
+        <div className='flex justify-center'>
+          <FaCheck style={{ color: 'green' }} />
+        </div>
+      ) : (
+        <div className='flex justify-center'>
+          <FaTimes style={{ color: 'red' }} />
+        </div>
+      ),
+  }),
   columnHelper.accessor((row) => row.isAdmin, {
     id: 'admin',
     header: 'Admin',

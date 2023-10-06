@@ -1,4 +1,4 @@
-import { USERS_URL } from '../constants';
+import { USERS_URL, UPLOAD_URL } from '../constants';
 import { apiSlice } from './apiSlice';
 
 export const usersApiSlice = apiSlice.injectEndpoints({
@@ -57,6 +57,16 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
       invalidatesTags: ['Users'],
+    }),
+    uploadPassportImage: builder.mutation({
+      query: (data) => ({
+        url: UPLOAD_URL,
+        method: 'POST',
+        body: data,
+        headers: {
+          'upload-type': 'passport',
+        },
+      }),
     }),
     updateShippingInfo: builder.mutation({
       query: (data) => ({
@@ -120,6 +130,7 @@ export const {
   useDeleteUserMutation,
   useGetUserDetailsQuery,
   useUpdateUserMutation,
+  useUploadPassportImageMutation,
   useUpdateShippingInfoMutation,
   useUpdatePayMethodMutation,
   useGetMyCurrentAsksQuery,

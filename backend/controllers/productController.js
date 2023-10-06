@@ -188,6 +188,60 @@ const getLatestProducts = asyncHandler(async (req, res) => {
   res.status(200).json(products);
 });
 
+// @desc    Get product asks by size
+// @route   GET /api/products/:productId/:size/asks
+// @access  Public
+const getProductAsks = asyncHandler(async (req, res) => {
+  const { productId, size } = req.params;
+  const product = await Product.findOne({ productIdentifier: productId });
+  const asks = Object.values(
+    product.sizes.get(size).asks.reduce((acc, ask) => {
+      if (acc[ask.price]) {
+        acc[ask.price].quantity += 1;
+      } else {
+        acc[ask.price] = {
+          price: ask.price,
+          quantity: 1,
+        };
+      }
+      return acc;
+    }, {})
+  ).slice(-30);
+  res.status(200).json(asks);
+});
+
+// @desc    Get product bids by size
+// @route   GET /api/products/:productId/:size/bids
+// @access  Public
+const getProductBids = asyncHandler(async (req, res) => {
+  const { productId, size } = req.params;
+  const product = await Product.findOne({ productIdentifier: productId });
+  const bids = Object.values(
+    product.sizes.get(size).bids.reduce((acc, bid) => {
+      if (acc[bid.price]) {
+        acc[bid.price].quantity += 1;
+      } else {
+        acc[bid.price] = {
+          price: bid.price,
+          quantity: 1,
+        };
+      }
+      return acc;
+    }, {})
+  ).slice(-30);
+  res.status(200).json(bids);
+});
+
+// @desc    Get product last sales by size
+// @route   GET /api/products/:productId/:size/lastSales
+// @access  Public
+const getProductLastSales = asyncHandler(async (req, res) => {
+  const { productId, size } = req.params;
+  const product = await Product.findOne({ productIdentifier: productId });
+  const lastSales = product.sizes.get(size).lastSales.slice(-30);
+  res.status(200).json(lastSales);
+});
+
 // @desc    Place new ask
 // @route   POST /api/products/:productId/asks
 // @access  Private/Seller
@@ -573,6 +627,9 @@ export {
   updateProduct,
   deleteProduct,
   getLatestProducts,
+  getProductAsks,
+  getProductBids,
+  getProductLastSales,
   placeAsk,
   saleNow,
   placeBid,

@@ -32,14 +32,14 @@ const productSaleSchema = mongoose.Schema(
       type: Number,
       required: true,
     },
-    size: {
-      type: Number,
+    createdAt: {
+      type: Date,
       required: true,
     },
-  },
-  {
-    timestamps: true,
   }
+  // {
+  //   timestamps: true,
+  // }
 );
 
 const productSchema = mongoose.Schema(

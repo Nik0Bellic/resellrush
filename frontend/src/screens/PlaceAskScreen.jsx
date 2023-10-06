@@ -58,7 +58,7 @@ const PlaceAskScreen = () => {
   );
   const [askComments, setAskComments] = useState('');
   const [payoutMethod, setPayoutMethod] = useState(
-    userInfo.payMethod || 'PayPal'
+    userInfo.payMethod || 'card'
   );
 
   const [noShippingService, setNoShippingService] = useState(false);
@@ -479,11 +479,11 @@ const PlaceAskScreen = () => {
                   )}
                   <div className='flex space-x-4 lg:space-x-6 lg:text-lg'>
                     <label className='inline-block relative cursor-pointer select-none peer pl-5 lg:pl-6'>
-                      PayPal (and Credit Card)
+                      Card (specified in email)
                       <input
                         type='radio'
                         name='payout'
-                        id='PayPal'
+                        id='card'
                         checked
                         onChange={(e) => setPayoutMethod(e.target.id)}
                         className='absolute opacity-0 cursor-pointer h-0 w-0 peer'

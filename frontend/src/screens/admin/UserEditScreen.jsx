@@ -16,6 +16,7 @@ const UserEditScreen = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [isSeller, setIsSeller] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
   const {
@@ -50,6 +51,7 @@ const UserEditScreen = () => {
       setFirstName(user.firstName);
       setLastName(user.lastName);
       setEmail(user.email);
+      setIsSeller(user.isSeller);
       setIsAdmin(user.isAdmin);
     }
   }, [user]);
@@ -60,7 +62,14 @@ const UserEditScreen = () => {
     e.preventDefault();
 
     try {
-      await updateUser({ userId, firstName, lastName, email, isAdmin });
+      await updateUser({
+        userId,
+        firstName,
+        lastName,
+        email,
+        isSeller,
+        isAdmin,
+      });
       refetch();
       navigate('/admin/userList', {
         state: { message: 'User updated successfully' },
@@ -129,11 +138,24 @@ const UserEditScreen = () => {
               className='text-sm sm:text-base lg:text-lg pb-1 w-full focus:outline-none border-b-2 border-black'
             />
           </div>
+
+          <label className='inline-block relative cursor-pointer select-none peer pl-5 lg:pl-6'>
+            Is Seller
+            <input
+              type='checkbox'
+              id='isSeller'
+              checked={isSeller}
+              onChange={() => setIsSeller((cur) => !cur)}
+              className='absolute opacity-0 cursor-pointer h-0 w-0 peer'
+            />
+            <span className='absolute mt-1 top-0 left-0 h-4 w-4 lg:h-5 lg:w-5 border-2 border-black rounded-md peer-hover:border-strongYellow peer-checked:border-black peer-checked:bg-strongYellow'></span>
+          </label>
+
           <label className='inline-block relative cursor-pointer select-none peer pl-5 lg:pl-6'>
             Is Admin
             <input
               type='checkbox'
-              id='fedEx'
+              id='isAdmin'
               checked={isAdmin}
               onChange={() => setIsAdmin((cur) => !cur)}
               className='absolute opacity-0 cursor-pointer h-0 w-0 peer'

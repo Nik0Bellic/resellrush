@@ -13,7 +13,7 @@ import { protect, admin } from '../middleware/authMiddleware.js';
 
 router.route('/').get(protect, admin, getDeals);
 router.route('/:id').get(protect, getDealById);
-router.route('/:id/bySeller').put(protect, updateDealToSentBySeller);
+router.route('/:id/bySeller').put(protect, admin, updateDealToSentBySeller);
 router
   .route('/:id/verification')
   .put(protect, admin, updateDealToVerificationInProgress);

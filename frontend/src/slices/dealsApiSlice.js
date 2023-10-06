@@ -1,5 +1,5 @@
 import { apiSlice } from './apiSlice';
-import { DEALS_URL, UPLOAD_URL } from '../constants';
+import { DEALS_URL } from '../constants';
 
 export const dealsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -14,16 +14,6 @@ export const dealsApiSlice = apiSlice.injectEndpoints({
         url: `${DEALS_URL}/${dealId}`,
       }),
       keepUnusedDataFor: 5,
-    }),
-    uploadShippingImage: builder.mutation({
-      query: (data) => ({
-        url: UPLOAD_URL,
-        method: 'POST',
-        body: data,
-        headers: {
-          'upload-type': 'shippingService',
-        },
-      }),
     }),
     updateDealToSentBySeller: builder.mutation({
       query: (dealId) => ({
@@ -61,7 +51,6 @@ export const dealsApiSlice = apiSlice.injectEndpoints({
 export const {
   useGetDealsQuery,
   useGetDealDetailsQuery,
-  useUploadShippingImageMutation,
   useUpdateDealToSentBySellerMutation,
   useUpdateDealToVerificationInProgressMutation,
   useUpdateDealToVerifiedMutation,

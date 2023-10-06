@@ -7,9 +7,6 @@ const router = express.Router();
 const storage = multer.diskStorage({
   destination(req, file, cb) {
     let uploadPath = 'uploads';
-    if (req.uploadType === 'shippingService') {
-      uploadPath = 'uploads/shippingService';
-    }
 
     cb(null, uploadPath);
   },

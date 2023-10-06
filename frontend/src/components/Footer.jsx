@@ -2,7 +2,7 @@ import { FaInstagram, FaVk } from 'react-icons/fa';
 
 const Footer = () => {
   return (
-    <footer className='font-mono relative mt-44'>
+    <footer className='mt-32 md:mt-48 lg:mt-64 xl:mt-72 font-mono'>
       <div className='grid grid-cols-2'>
         <div className='flex-1 p-7 sm:p-10  lg:p-14 xl:p-20 flex flex-col lg:items-center text-left lg:text-center border-t-2 border-r border-black w-full items-left'>
           <h2 className='font-bold text-md md:text-lg lg:text-2xl mb-1 uppercase'>
@@ -64,7 +64,6 @@ const Footer = () => {
           </div>
         </div>
       </div>
-      <div className='absolute left-[48%] top-0 -mt-1 bg-white w-[4vw] h-[3vw] z-10'></div>
     </footer>
   );
 };

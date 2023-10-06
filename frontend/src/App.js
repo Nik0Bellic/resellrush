@@ -23,7 +23,7 @@ const App = () => {
   return (
     <>
       <Header />
-      <main className='pb-48 container mx-auto px-6 md:px-7 md:max-w-3xl lg:px-28 xl:px-6 lg:max-w-5xl xl:max-w-6xl'>
+      <main className='container mx-auto px-6 md:px-7 md:max-w-3xl lg:px-28 xl:px-6 lg:max-w-5xl xl:max-w-6xl'>
         <Outlet />
       </main>
       <Footer />

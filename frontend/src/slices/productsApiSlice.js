@@ -56,6 +56,24 @@ export const productsApiSlice = apiSlice.injectEndpoints({
       }),
       keepUnusedDataFor: 5,
     }),
+    getProductBids: builder.query({
+      query: ({ productId, size }) => ({
+        url: `${PRODUCTS_URL}/${productId}/${size}/bids`,
+      }),
+      keepUnusedDataFor: 5,
+    }),
+    getProductAsks: builder.query({
+      query: ({ productId, size }) => ({
+        url: `${PRODUCTS_URL}/${productId}/${size}/asks`,
+      }),
+      keepUnusedDataFor: 5,
+    }),
+    getProductLastSales: builder.query({
+      query: ({ productId, size }) => ({
+        url: `${PRODUCTS_URL}/${productId}/${size}/lastSales`,
+      }),
+      keepUnusedDataFor: 5,
+    }),
     placeAsk: builder.mutation({
       query: (data) => ({
         url: `${PRODUCTS_URL}/${data.sellItem.productIdentifier}/asks`,
@@ -105,6 +123,9 @@ export const {
   useUploadProductImageMutation,
   useDeleteProductMutation,
   useGetLatestProductsQuery,
+  useGetProductBidsQuery,
+  useGetProductAsksQuery,
+  useGetProductLastSalesQuery,
   usePlaceAskMutation,
   useSaleNowMutation,
   usePlaceBidMutation,

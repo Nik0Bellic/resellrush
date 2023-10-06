@@ -7,6 +7,9 @@ import {
   updateProduct,
   deleteProduct,
   getLatestProducts,
+  getProductAsks,
+  getProductBids,
+  getProductLastSales,
   placeAsk,
   saleNow,
   placeBid,
@@ -21,6 +24,9 @@ router
   .get(getProductByIdentifier)
   .put(protect, admin, updateProduct)
   .delete(protect, admin, deleteProduct);
+router.route('/:productId/:size/asks').get(getProductAsks);
+router.route('/:productId/:size/bids').get(getProductBids);
+router.route('/:productId/:size/lastSales').get(getProductLastSales);
 router.route('/:productId/asks').post(protect, seller, placeAsk);
 router.route('/:productId/sale').post(protect, seller, saleNow);
 router.route('/:productId/bids').post(protect, placeBid);

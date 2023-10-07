@@ -32,16 +32,39 @@ const importData = async () => {
         .replace(/[^a-z0-9-]+/g, '');
 
       const defaultSizes = [
-        3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5,
-        12, 12.5, 13, 14, 15, 16, 17,
+        '3,5',
+        '4',
+        '4,5',
+        '5',
+        '5,5',
+        '6',
+        '6,5',
+        '7',
+        '7,5',
+        '8',
+        '8,5',
+        '9',
+        '9,5',
+        '10',
+        '10,5',
+        '11',
+        '11,5',
+        '12',
+        '12,5',
+        '13',
+        '14',
+        '15',
+        '16',
+        '17',
       ];
 
       const sizesObj = {};
 
       defaultSizes.forEach((size) => {
-        sizesObj[String(size).replace('.', ',')] = {
+        sizesObj[size] = {
           asks: [],
           bids: [],
+          lastSales: [],
         };
       });
 
@@ -58,7 +81,7 @@ const importData = async () => {
     for (const sale of lastSales) {
       const randomProduct =
         createdProducts[Math.floor(Math.random() * createdProducts.length)];
-      const productSalesBySize = randomProduct.sizes.get('7').lastSales;
+      const productSalesBySize = randomProduct.sizes.get(sale.size).lastSales;
       productSalesBySize.push({ ...sale });
     }
 
@@ -92,7 +115,7 @@ const importData = async () => {
 
       const { size, ...askWithoutSize } = ask;
 
-      const productAsksBySize = randomProduct.sizes.get(String(size)).asks;
+      const productAsksBySize = randomProduct.sizes.get(size).asks;
       const position = productAsksBySize.findIndex(
         (productAsk) => productAsk.price > askWithoutSize.price
       );

@@ -1,6 +1,6 @@
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import SearchBox from './SearchBox';
-import { useState } from 'react';
 import { FaSearch, FaInstagram, FaVk } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLogoutMutation } from '../slices/usersApiSlice';
@@ -12,6 +12,8 @@ const Header = () => {
   const [isActive, setIsActive] = useState(false);
   const [mobileSearchShown, setMobileSearchShown] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+
+  const menuRef = useRef(null);
 
   const { userInfo } = useSelector((state) => state.auth);
 
@@ -39,6 +41,7 @@ const Header = () => {
 
   const logoutHandler = async () => {
     try {
+      setIsActive(false);
       await logoutApiCall().unwrap();
       dispatch(logout());
       dispatch(resetFavorites());
@@ -47,6 +50,19 @@ const Header = () => {
       console.log(err);
     }
   };
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsActive(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <header className='border-b-2 border-black'>
@@ -250,6 +266,7 @@ const Header = () => {
 
           {/* Mobile Menu */}
           <div
+            ref={menuRef}
             className={`absolute top-3 right-1 flex flex-col items-end py-4 pr-4 duration-200 ${
               isActive && 'border-2 border-black rounded-3xl bg-white z-30'
             }`}
@@ -289,6 +306,7 @@ const Header = () => {
                 </Link> */}
                 <Link
                   to='/about'
+                  onClick={() => setIsActive(false)}
                   className='hover:px-3 hover:py-2
             outline-black rounded-full hover:bg-strongYellow hover:outline hover:scale-110 duration-200'
                 >
@@ -296,6 +314,7 @@ const Header = () => {
                 </Link>
                 <Link
                   to='/support'
+                  onClick={() => setIsActive(false)}
                   className='hover:px-3 hover:py-2 text-black
             outline-black rounded-full hover:bg-strongYellow hover:outline hover:scale-110 duration-200'
                 >
@@ -305,6 +324,7 @@ const Header = () => {
                   <>
                     <Link
                       to='/profile'
+                      onClick={() => setIsActive(false)}
                       className='hover:px-3 hover:py-2 text-black
                     outline-black rounded-full hover:bg-strongYellow hover:outline hover:scale-110 duration-200'
                     >
@@ -314,6 +334,7 @@ const Header = () => {
                       <>
                         <Link
                           to='/admin/productList'
+                          onClick={() => setIsActive(false)}
                           className='hover:px-3 hover:py-2 text-orange-500
                     outline-black rounded-full hover:bg-strongYellow hover:outline hover:scale-110 duration-200'
                         >
@@ -321,6 +342,7 @@ const Header = () => {
                         </Link>
                         <Link
                           to='/admin/userList'
+                          onClick={() => setIsActive(false)}
                           className='hover:px-3 hover:py-2 text-orange-500
                     outline-black rounded-full hover:bg-strongYellow hover:outline hover:scale-110 duration-200'
                         >
@@ -328,6 +350,7 @@ const Header = () => {
                         </Link>
                         <Link
                           to='/admin/dealList'
+                          onClick={() => setIsActive(false)}
                           className='hover:px-3 hover:py-2 text-orange-500
                     outline-black rounded-full hover:bg-strongYellow hover:outline hover:scale-110 duration-200'
                         >

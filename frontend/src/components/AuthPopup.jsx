@@ -1,6 +1,6 @@
 import spinner from '../assets/Spinner.gif';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLoginMutation, useRegisterMutation } from '../slices/usersApiSlice';
 import { setCredentials, setAuthModalActive } from '../slices/authSlice';

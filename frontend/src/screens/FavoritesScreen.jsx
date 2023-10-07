@@ -6,7 +6,7 @@ const FavoritesScreen = () => {
 
   return (
     <>
-      <h1 className='font-bold text-2xl mb-1'>Favorites</h1>
+      <h1 className='font-bold text-2xl mt-8 mb-1'>Favorites</h1>
       {favoriteItems.length === 0 ? (
         <p>Add items to your favorites and they'll appear here</p>
       ) : (

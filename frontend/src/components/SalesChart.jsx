@@ -68,7 +68,7 @@ const SalesChart = ({ productId }) => {
   ) : error ? (
     <Message variant='Error' text={error?.data?.message || error.error} />
   ) : (
-    lastSales.length !== 0 && (
+    lastSales.length > 1 && (
       <div className='mt-12 -mb-48'>
         <div className='text-xl font-medium w-full text-center'>
           Price History

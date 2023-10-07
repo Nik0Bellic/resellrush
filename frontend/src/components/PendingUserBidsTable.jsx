@@ -57,7 +57,7 @@ const PendingUserBidsTable = () => {
         header: 'Status',
         cell: (info) => (
           <div className='flex flex-col justify-between items-end h-24 py-2'>
-            <div>{info.getValue()}</div>
+            <div>{info.getValue()?.status}</div>
             <Link
               className='flex items-center hover:text-strongYellow'
               to={`/deal/${info.getValue()?.bidId}`}

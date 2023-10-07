@@ -74,7 +74,12 @@ const DealScreen = () => {
               <strong>Deal ID: </strong>
               {deal.offerId}
             </div>
-            {userInfo && <div>Deal Status: {deal.status}</div>}
+            {userInfo && (
+              <div>
+                <strong>Deal Status: </strong>
+                {deal.status}
+              </div>
+            )}
             <div className='flex'>
               <strong>Deal Price:</strong>
               <div className='font-bold ml-2'>${deal.price}</div>
@@ -93,10 +98,18 @@ const DealScreen = () => {
                   the shipping receipt within 48 hours of your ask being
                   matched. Ensure the receipt displays the Resell Rush
                   Verification address and matches the name in your Resell Rush
-                  profile. The email containing the receipt must be sent from
-                  the email address associated with your Resell Rush profile.
-                  Failure to comply may result in penalty fees or account
-                  restrictions.
+                  profile. <br />
+                  <br />
+                  The email containing the receipt must be sent from the email
+                  address associated with your Resell Rush profile. Failure to
+                  comply may result in penalty fees or account restrictions.
+                  <br />
+                  <br />
+                  <span className='font-semibold'>
+                    If you've received an email from us that your status has
+                    changed, please log out and log back in to ensure your
+                    account reflects the latest updates.
+                  </span>
                 </div>
               )}
 

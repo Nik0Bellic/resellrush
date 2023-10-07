@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 // @route   GET /api/products
 // @access  Public
 const getProducts = asyncHandler(async (req, res) => {
-  const pageSize = 8;
+  const pageSize = process.env.PAGINATION_LIMIT;
   const page = Number(req.query.pageNumber) || 1;
 
   const keyword = req.query.keyword
@@ -310,6 +310,10 @@ const placeAsk = asyncHandler(async (req, res) => {
     askId,
   });
 
+  if (askPrice < itemFromDB.productLowestAsk) {
+    itemFromDB.productLowestAsk = askPrice;
+  }
+
   await itemFromDB.save();
   await userFromDB.save();
 
@@ -395,6 +399,8 @@ const saleNow = asyncHandler(async (req, res) => {
     bidId,
   });
   buyerCurrentBids.splice(deletePosition, 1);
+
+  itemFromDB.productLastSale = salePrice;
 
   // Create Deal
   const deal = new Deal({
@@ -596,6 +602,8 @@ const purchaseNow = asyncHandler(async (req, res) => {
     askId,
   });
   sellerCurrentAsks.splice(deletePosition, 1);
+
+  itemFromDB.productLastSale = purchasePrice;
 
   // Create Deal
   const deal = new Deal({

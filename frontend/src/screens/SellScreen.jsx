@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import SizesPopup from '../components/SizesPopup';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
+import SalesChart from '../components/SalesChart';
 import { useGetProductDetailsQuery } from '../slices/productsApiSlice';
 import { setAuthModalActive } from '../slices/authSlice';
 import { createAsk } from '../slices/askSlice';
@@ -394,6 +395,8 @@ const SellScreen = () => {
               </form>
             </div>
           </div>
+          <SalesChart productId={productId} />
+
           <SizesPopup
             sizes={sizes}
             handleSizeChoice={handleSizeChoice}

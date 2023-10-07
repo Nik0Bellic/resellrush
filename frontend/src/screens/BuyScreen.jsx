@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import SizesPopup from '../components/SizesPopup';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
+import SalesChart from '../components/SalesChart';
 import { useGetProductDetailsQuery } from '../slices/productsApiSlice';
 import { setAuthModalActive } from '../slices/authSlice';
 import { createBid } from '../slices/bidSlice';
@@ -226,14 +227,14 @@ const BuyScreen = () => {
                 </div>
                 <div className='flex flex-col justify-between mt-3 text-sm sm:text-base lg:text-lg'>
                   {isBid &&
-                    (!maxBidForSize ||
-                      (bidPrice &&
-                        maxBidForSize &&
-                        bidPrice > maxBidForSize)) && (
-                      <div className='w-full text-center font-medium mb-4 text-strongYellow'>
-                        You are about to be the highest bidder!
-                      </div>
-                    )}
+                  (!maxBidForSize ||
+                    (bidPrice && maxBidForSize && bidPrice > maxBidForSize)) ? (
+                    <div className='w-full text-center font-medium mb-4 text-strongYellow'>
+                      You are about to be the highest bidder!
+                    </div>
+                  ) : (
+                    <></>
+                  )}
                   {noOffersMessage && (
                     <Message
                       variant='info'
@@ -308,7 +309,13 @@ const BuyScreen = () => {
                           type='number'
                           name='q'
                           placeholder='Enter Bid'
-                          onChange={(e) => setBidPrice(Number(e.target.value))}
+                          onChange={(e) => {
+                            if (e.target.value === '') {
+                              setBidPrice('');
+                            } else {
+                              setBidPrice(Number(e.target.value));
+                            }
+                          }}
                           value={bidPrice}
                           className='w-full mr-5 pl-1.5 focus:outline-none'
                           required={true}
@@ -408,6 +415,8 @@ const BuyScreen = () => {
               </form>
             </div>
           </div>
+          <SalesChart productId={productId} />
+
           <SizesPopup
             sizes={sizes}
             handleSizeChoice={handleSizeChoice}

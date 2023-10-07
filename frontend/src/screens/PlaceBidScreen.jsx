@@ -39,7 +39,7 @@ const PlaceBidScreen = () => {
   const [updateShippingInfo] = useUpdateShippingInfoMutation();
   const [updatePayMethod] = useUpdatePayMethodMutation();
 
-  const [isPickup, setIsPickup] = useState(false);
+  // const [isPickup, setIsPickup] = useState(false);
 
   const [shippingService, setShippingService] = useState(
     userInfo.shippingInfo?.shippingService || ''
@@ -322,7 +322,7 @@ const PlaceBidScreen = () => {
                 onSubmit={handleCheckout}
                 className='flex flex-col space-y-4 w-full max-w-md'
               >
-                <div className='flex justify-between border-2 border-black rounded-full relative h-12 md:h-[3.28rem] w-[13.5rem] sm:w-full md:text-lg lg:text-xl max-w-xs sm:mb-4'>
+                {/* <div className='flex justify-between border-2 border-black rounded-full relative h-12 md:h-[3.28rem] w-[13.5rem] sm:w-full md:text-lg lg:text-xl max-w-xs sm:mb-4'>
                   <input
                     type='radio'
                     id='shipping'
@@ -357,291 +357,292 @@ const PlaceBidScreen = () => {
                   >
                     In-Person
                   </label>
-                </div>
-                {!isPickup ? (
-                  <>
-                    <div className='font-bold text-xl'>
-                      Return Shipping Info
-                    </div>
-                    <div className='flex flex-col'>
-                      {noShippingService && (
-                        <Message
-                          variant='Warning'
-                          text='Please Select Service'
-                          small={true}
-                          noLabel={true}
-                        />
-                      )}
-                      {!confirmed ? (
-                        <div className='flex space-x-4 lg:space-x-6 lg:text-lg'>
-                          <label className='inline-block relative cursor-pointer select-none peer pl-5 lg:pl-6'>
-                            DHL
-                            <input
-                              type='radio'
-                              name='service'
-                              id='DHL'
-                              checked={shippingService === 'DHL'}
-                              disabled={confirmed}
-                              onChange={(e) => setShippingService(e.target.id)}
-                              className='absolute opacity-0 cursor-pointer h-0 w-0 peer'
-                            />
-                            <span className='absolute mt-1 top-0 left-0 h-4 w-4 lg:h-5 lg:w-5 border-2 border-black rounded-md peer-hover:border-strongYellow peer-checked:border-black peer-checked:bg-strongYellow'></span>
-                          </label>
-                          <label className='inline-block relative cursor-pointer select-none peer pl-5 lg:pl-6'>
-                            UPS
-                            <input
-                              type='radio'
-                              name='service'
-                              id='UPS'
-                              checked={shippingService === 'UPS'}
-                              disabled={confirmed}
-                              onChange={(e) => setShippingService(e.target.id)}
-                              className='absolute opacity-0 cursor-pointer h-0 w-0 mt-1 peer'
-                            />
-                            <span className='absolute mt-1 top-0 left-0 h-4 w-4 lg:h-5 lg:w-5 border-2 border-black rounded-md peer-hover:border-strongYellow peer-checked:border-black peer-checked:bg-strongYellow'></span>
-                          </label>
-                          <label className='inline-block relative cursor-pointer select-none peer pl-5 lg:pl-6'>
-                            FedEx
-                            <input
-                              type='radio'
-                              name='service'
-                              id='fedEx'
-                              checked={shippingService === 'fedEx'}
-                              disabled={confirmed}
-                              onChange={(e) => setShippingService(e.target.id)}
-                              className='absolute opacity-0 cursor-pointer h-0 w-0 peer'
-                            />
-                            <span className='absolute mt-1 top-0 left-0 h-4 w-4 lg:h-5 lg:w-5 border-2 border-black rounded-md peer-hover:border-strongYellow peer-checked:border-black peer-checked:bg-strongYellow'></span>
-                          </label>
-                        </div>
-                      ) : (
-                        <div className='col-span-2'>
-                          <div className='font-medium opacity-25 text-xs'>
-                            Shipping Service
-                          </div>
-                          <div
-                            className={`border-b-2 border-black text-sm sm:text-base lg:text-lg pb-1 w-full focus:outline-none ${
-                              confirmed && 'border-none bg-transparent'
-                            }`}
-                          >
-                            {shippingService}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className='grid gap-4 lg:gap-6 grid-cols-1 sm:grid-cols-2'>
-                      <div className='col-span-2 sm:col-span-1'>
-                        {confirmed && (
-                          <div className='font-medium opacity-25 text-xs'>
-                            First Name
-                          </div>
-                        )}
-                        <input
-                          type='text'
-                          placeholder='First Name'
-                          required={true}
-                          onChange={(e) => setFirstName(e.target.value)}
-                          value={firstName}
-                          disabled={confirmed}
-                          className={`border-b-2 border-black text-sm sm:text-base lg:text-lg pb-1 w-full focus:outline-none ${
-                            confirmed && 'border-none bg-transparent'
-                          }`}
-                        />
-                      </div>
-                      <div className='col-span-2 sm:col-span-1'>
-                        {confirmed && (
-                          <div className='font-medium opacity-25 text-xs'>
-                            Last Name
-                          </div>
-                        )}
-                        <input
-                          type='text'
-                          placeholder='Last Name'
-                          required={true}
-                          onChange={(e) => setLastName(e.target.value)}
-                          value={lastName}
-                          disabled={confirmed}
-                          className={`col-span-2 sm:col-span-1 border-b-2 border-black text-sm sm:text-base lg:text-lg pb-1 w-full focus:outline-none ${
-                            confirmed && 'border-none bg-transparent'
-                          }`}
-                        />
-                      </div>
-                      {!confirmed ? (
-                        <div className='relative md:max-w-md w-full col-span-2'>
-                          {noCountry && (
-                            <Message
-                              variant='Warning'
-                              text='Please Select Country'
-                              small={true}
-                              noLabel={true}
-                            />
-                          )}
-                          <button
-                            type='button'
+                </div> */}
+                {/* {!isPickup ? ( */}
+                <>
+                  <div className='font-bold text-xl'>Shipping Info</div>
+                  <div className='flex flex-col'>
+                    {noShippingService && (
+                      <Message
+                        variant='Warning'
+                        text='Please Select Service'
+                        small={true}
+                        noLabel={true}
+                      />
+                    )}
+                    {!confirmed ? (
+                      <div className='flex space-x-4 lg:space-x-6 lg:text-lg'>
+                        <label className='inline-block relative cursor-pointer select-none peer pl-5 lg:pl-6'>
+                          DHL
+                          <input
+                            type='radio'
+                            name='service'
+                            id='DHL'
+                            checked={shippingService === 'DHL'}
                             disabled={confirmed}
-                            onClick={() => setSelectOpen((current) => !current)}
-                            className='relative z-20 flex justify-between bg-white items-center border-2 border-black rounded-full py-2 px-3 sm:px-5 w-full text-sm sm:text-base lg:text-lg'
-                          >
-                            <div>Country</div>
-                            <div className='flex font-semibold space-x-1 md:space-x-2 items-center'>
-                              <div>{country}</div>
-                              <div>
-                                <svg
-                                  xmlns='http://www.w3.org/2000/svg'
-                                  fill='none'
-                                  viewBox='0 0 24 24'
-                                  strokeWidth={2}
-                                  stroke='currentColor'
-                                  className='w-5 sm:w-6'
-                                >
-                                  <path
-                                    strokeLinecap='round'
-                                    strokeLinejoin='round'
-                                    d='M19.5 8.25l-7.5 7.5-7.5-7.5'
-                                  />
-                                </svg>
-                              </div>
-                            </div>
-                          </button>
-                          {selectOpen && (
-                            <div className='absolute w-full right-0 max-w-md z-10 bg-white border-2 border-black border-t-0 rounded-xl rounded-t-none p-4 pt-10 -mt-5 overflow-y-auto max-h-64'>
-                              <ul className='flex flex-wrap justify-left gap-2 md:gap-3'>
-                                {countryArr.map(({ label, value }) => {
-                                  return (
-                                    <li key={value}>
-                                      <input
-                                        type='radio'
-                                        id={`${value}`}
-                                        name='country'
-                                        required={true}
-                                        onClick={() => setCountry(label)}
-                                        className='peer hidden'
-                                      />
-                                      <label
-                                        htmlFor={`${value}`}
-                                        className={`inline-flex cursor-pointer text-sm md:text-base select-none items-center justify-center outline-none border-2 border-black rounded-full py-1.5 md:py-2 px-3 md:px-4 peer-hover:opacity-100 peer-hover:border-strongYellow peer-hover:scale-110 duration-200 ${
-                                          country && country !== label
-                                            ? 'opacity-50'
-                                            : country === label &&
-                                              'bg-strongYellow'
-                                        }`}
-                                      >
-                                        {label}
-                                      </label>
-                                    </li>
-                                  );
-                                })}
-                              </ul>
-                            </div>
-                          )}
+                            onChange={(e) => setShippingService(e.target.id)}
+                            className='absolute opacity-0 cursor-pointer h-0 w-0 peer'
+                          />
+                          <span className='absolute mt-1 top-0 left-0 h-4 w-4 lg:h-5 lg:w-5 border-2 border-black rounded-md peer-hover:border-strongYellow peer-checked:border-black peer-checked:bg-strongYellow'></span>
+                        </label>
+                        <label className='inline-block relative cursor-pointer select-none peer pl-5 lg:pl-6'>
+                          UPS
+                          <input
+                            type='radio'
+                            name='service'
+                            id='UPS'
+                            checked={shippingService === 'UPS'}
+                            disabled={confirmed}
+                            onChange={(e) => setShippingService(e.target.id)}
+                            className='absolute opacity-0 cursor-pointer h-0 w-0 mt-1 peer'
+                          />
+                          <span className='absolute mt-1 top-0 left-0 h-4 w-4 lg:h-5 lg:w-5 border-2 border-black rounded-md peer-hover:border-strongYellow peer-checked:border-black peer-checked:bg-strongYellow'></span>
+                        </label>
+                        <label className='inline-block relative cursor-pointer select-none peer pl-5 lg:pl-6'>
+                          FedEx
+                          <input
+                            type='radio'
+                            name='service'
+                            id='fedEx'
+                            checked={shippingService === 'fedEx'}
+                            disabled={confirmed}
+                            onChange={(e) => setShippingService(e.target.id)}
+                            className='absolute opacity-0 cursor-pointer h-0 w-0 peer'
+                          />
+                          <span className='absolute mt-1 top-0 left-0 h-4 w-4 lg:h-5 lg:w-5 border-2 border-black rounded-md peer-hover:border-strongYellow peer-checked:border-black peer-checked:bg-strongYellow'></span>
+                        </label>
+                      </div>
+                    ) : (
+                      <div className='col-span-2'>
+                        <div className='font-medium opacity-25 text-xs'>
+                          Shipping Service
                         </div>
-                      ) : (
-                        <div className='col-span-2'>
-                          <div className='font-medium opacity-25 text-xs'>
-                            Country
-                          </div>
-                          <div
-                            className={`border-b-2 border-black text-sm sm:text-base lg:text-lg pb-1 w-full focus:outline-none ${
-                              confirmed && 'border-none bg-transparent'
-                            }`}
-                          >
-                            {country}
-                          </div>
+                        <div
+                          className={`border-b-2 border-black text-sm sm:text-base lg:text-lg pb-1 w-full focus:outline-none ${
+                            confirmed && 'border-none bg-transparent'
+                          }`}
+                        >
+                          {shippingService}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className='grid gap-4 lg:gap-6 grid-cols-1 sm:grid-cols-2'>
+                    <div className='col-span-2 sm:col-span-1'>
+                      {confirmed && (
+                        <div className='font-medium opacity-25 text-xs'>
+                          First Name
                         </div>
                       )}
-                      <div className='col-span-2 sm:col-span-1'>
-                        {confirmed && (
-                          <div className='font-medium opacity-25 text-xs'>
-                            City
-                          </div>
-                        )}
-                        <input
-                          type='text'
-                          placeholder='City'
-                          required={true}
-                          disabled={confirmed}
-                          onChange={(e) => setCity(e.target.value)}
-                          value={city}
-                          className={`border-b-2 border-black text-sm sm:text-base lg:text-lg pb-1 w-full focus:outline-none ${
-                            confirmed && 'border-none bg-transparent'
-                          }`}
-                        />
-                      </div>
-                      <div className='col-span-2 sm:col-span-1'>
-                        {confirmed && (
-                          <div className='font-medium opacity-25 text-xs'>
-                            Region
-                          </div>
-                        )}
-                        <input
-                          type='text'
-                          placeholder='Region'
-                          required={true}
-                          disabled={confirmed}
-                          onChange={(e) => setRegion(e.target.value)}
-                          value={region}
-                          className={`border-b-2 border-black text-sm sm:text-base lg:text-lg pb-1 w-full focus:outline-none ${
-                            confirmed && 'border-none bg-transparent'
-                          }`}
-                        />
-                      </div>
-                      <div className='col-span-2'>
-                        {confirmed && (
-                          <div className='font-medium opacity-25 text-xs'>
-                            Address
-                          </div>
-                        )}
-                        <input
-                          type='text'
-                          placeholder='Address'
-                          required={true}
-                          disabled={confirmed}
-                          onChange={(e) => setAddress(e.target.value)}
-                          value={address}
-                          className={`col-span-2 border-b-2 border-black text-sm sm:text-base lg:text-lg pb-1 w-full focus:outline-none ${
-                            confirmed && 'border-none bg-transparent'
-                          }`}
-                        />
-                      </div>
-                      <div className='col-span-2 sm:col-span-1'>
-                        {confirmed && (
-                          <div className='font-medium opacity-25 text-xs'>
-                            Postal Code
-                          </div>
-                        )}
-                        <input
-                          type='text'
-                          placeholder='Postal Code'
-                          required={true}
-                          disabled={confirmed}
-                          onChange={(e) => setPostalCode(e.target.value)}
-                          value={postalCode}
-                          className={`border-b-2 border-black text-sm sm:text-base lg:text-lg pb-1 w-full focus:outline-none ${
-                            confirmed && 'border-none bg-transparent'
-                          }`}
-                        />
-                      </div>
-                      <div className='col-span-2'>
-                        {confirmed && (
-                          <div className='font-medium opacity-25 text-xs mb-1'>
-                            Comments
-                          </div>
-                        )}
-                        <textarea
-                          placeholder='Comments'
-                          disabled={confirmed}
-                          onChange={(e) => setBidComments(e.target.value)}
-                          value={bidComments}
-                          rows='3'
-                          className='border-2 rounded-md border-black text-sm sm:text-base lg:text-lg w-full p-1.5 focus:outline-none'
-                        />
-                      </div>
+                      <input
+                        type='text'
+                        placeholder='First Name'
+                        required={true}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        value={firstName}
+                        disabled={confirmed}
+                        className={`border-b-2 border-black text-sm sm:text-base lg:text-lg pb-1 w-full focus:outline-none ${
+                          confirmed && 'border-none bg-transparent'
+                        }`}
+                      />
                     </div>
-                  </>
-                ) : (
+                    <div className='col-span-2 sm:col-span-1'>
+                      {confirmed && (
+                        <div className='font-medium opacity-25 text-xs'>
+                          Last Name
+                        </div>
+                      )}
+                      <input
+                        type='text'
+                        placeholder='Last Name'
+                        required={true}
+                        onChange={(e) => setLastName(e.target.value)}
+                        value={lastName}
+                        disabled={confirmed}
+                        className={`col-span-2 sm:col-span-1 border-b-2 border-black text-sm sm:text-base lg:text-lg pb-1 w-full focus:outline-none ${
+                          confirmed && 'border-none bg-transparent'
+                        }`}
+                      />
+                    </div>
+                    {!confirmed ? (
+                      <div className='relative md:max-w-md w-full col-span-2'>
+                        {noCountry && (
+                          <Message
+                            variant='Warning'
+                            text='Please Select Country'
+                            small={true}
+                            noLabel={true}
+                          />
+                        )}
+                        <button
+                          type='button'
+                          disabled={confirmed}
+                          onClick={() => setSelectOpen((current) => !current)}
+                          className='relative z-20 flex justify-between bg-white items-center border-2 border-black rounded-full py-2 px-3 sm:px-5 w-full text-sm sm:text-base lg:text-lg'
+                        >
+                          <div>Country</div>
+                          <div className='flex font-semibold space-x-1 md:space-x-2 items-center'>
+                            <div>{country}</div>
+                            <div>
+                              <svg
+                                xmlns='http://www.w3.org/2000/svg'
+                                fill='none'
+                                viewBox='0 0 24 24'
+                                strokeWidth={2}
+                                stroke='currentColor'
+                                className='w-5 sm:w-6'
+                              >
+                                <path
+                                  strokeLinecap='round'
+                                  strokeLinejoin='round'
+                                  d='M19.5 8.25l-7.5 7.5-7.5-7.5'
+                                />
+                              </svg>
+                            </div>
+                          </div>
+                        </button>
+                        {selectOpen && (
+                          <div className='absolute w-full right-0 max-w-md z-10 bg-white border-2 border-black border-t-0 rounded-xl rounded-t-none p-4 pt-10 -mt-5 overflow-y-auto max-h-64'>
+                            <ul className='flex flex-wrap justify-left gap-2 md:gap-3'>
+                              {countryArr.map(({ label, value }) => {
+                                return (
+                                  <li key={value}>
+                                    <input
+                                      type='radio'
+                                      id={`${value}`}
+                                      name='country'
+                                      required={true}
+                                      onClick={() => {
+                                        setCountry(label);
+                                        setSelectOpen((current) => !current);
+                                      }}
+                                      className='peer hidden'
+                                    />
+                                    <label
+                                      htmlFor={`${value}`}
+                                      className={`inline-flex cursor-pointer text-sm md:text-base select-none items-center justify-center outline-none border-2 border-black rounded-full py-1.5 md:py-2 px-3 md:px-4 peer-hover:opacity-100 peer-hover:border-strongYellow peer-hover:scale-110 duration-200 ${
+                                        country && country !== label
+                                          ? 'opacity-50'
+                                          : country === label &&
+                                            'bg-strongYellow'
+                                      }`}
+                                    >
+                                      {label}
+                                    </label>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className='col-span-2'>
+                        <div className='font-medium opacity-25 text-xs'>
+                          Country
+                        </div>
+                        <div
+                          className={`border-b-2 border-black text-sm sm:text-base lg:text-lg pb-1 w-full focus:outline-none ${
+                            confirmed && 'border-none bg-transparent'
+                          }`}
+                        >
+                          {country}
+                        </div>
+                      </div>
+                    )}
+                    <div className='col-span-2 sm:col-span-1'>
+                      {confirmed && (
+                        <div className='font-medium opacity-25 text-xs'>
+                          City
+                        </div>
+                      )}
+                      <input
+                        type='text'
+                        placeholder='City'
+                        required={true}
+                        disabled={confirmed}
+                        onChange={(e) => setCity(e.target.value)}
+                        value={city}
+                        className={`border-b-2 border-black text-sm sm:text-base lg:text-lg pb-1 w-full focus:outline-none ${
+                          confirmed && 'border-none bg-transparent'
+                        }`}
+                      />
+                    </div>
+                    <div className='col-span-2 sm:col-span-1'>
+                      {confirmed && (
+                        <div className='font-medium opacity-25 text-xs'>
+                          Region
+                        </div>
+                      )}
+                      <input
+                        type='text'
+                        placeholder='Region'
+                        required={true}
+                        disabled={confirmed}
+                        onChange={(e) => setRegion(e.target.value)}
+                        value={region}
+                        className={`border-b-2 border-black text-sm sm:text-base lg:text-lg pb-1 w-full focus:outline-none ${
+                          confirmed && 'border-none bg-transparent'
+                        }`}
+                      />
+                    </div>
+                    <div className='col-span-2'>
+                      {confirmed && (
+                        <div className='font-medium opacity-25 text-xs'>
+                          Address
+                        </div>
+                      )}
+                      <input
+                        type='text'
+                        placeholder='Address'
+                        required={true}
+                        disabled={confirmed}
+                        onChange={(e) => setAddress(e.target.value)}
+                        value={address}
+                        className={`col-span-2 border-b-2 border-black text-sm sm:text-base lg:text-lg pb-1 w-full focus:outline-none ${
+                          confirmed && 'border-none bg-transparent'
+                        }`}
+                      />
+                    </div>
+                    <div className='col-span-2 sm:col-span-1'>
+                      {confirmed && (
+                        <div className='font-medium opacity-25 text-xs'>
+                          Postal Code
+                        </div>
+                      )}
+                      <input
+                        type='text'
+                        placeholder='Postal Code'
+                        required={true}
+                        disabled={confirmed}
+                        onChange={(e) => setPostalCode(e.target.value)}
+                        value={postalCode}
+                        className={`border-b-2 border-black text-sm sm:text-base lg:text-lg pb-1 w-full focus:outline-none ${
+                          confirmed && 'border-none bg-transparent'
+                        }`}
+                      />
+                    </div>
+                    <div className='col-span-2'>
+                      {confirmed && (
+                        <div className='font-medium opacity-25 text-xs mb-1'>
+                          Comments
+                        </div>
+                      )}
+                      <textarea
+                        placeholder='Comments'
+                        disabled={confirmed}
+                        onChange={(e) => setBidComments(e.target.value)}
+                        value={bidComments}
+                        rows='3'
+                        className='border-2 rounded-md border-black text-sm sm:text-base lg:text-lg w-full p-1.5 focus:outline-none'
+                      />
+                    </div>
+                  </div>
+                </>
+                {/* ) : (
                   <></>
-                )}
+                )} */}
 
                 <div className='pt-2 lg:pt-3 flex flex-col space-y-3 lg:space-y-4 w-full sm:w-60 lg:w-72'>
                   <div className='flex justify-between items-center text-sm lg:text-lg border-b-2 border-black pb-1 mx-0.5'>

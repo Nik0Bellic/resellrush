@@ -34,16 +34,15 @@ const getRandomPrice = () => {
   return Math.floor(Math.random() * (300 - 100 + 1) + 100);
 };
 
-const generateSequentialDate = (daysToAdd) => {
+const generateSequentialDate = (daysToSubtract) => {
   const date = new Date();
-  date.setFullYear(date.getFullYear() - 1);
-  date.setDate(date.getDate() + daysToAdd);
+  date.setDate(date.getDate() - daysToSubtract);
   return date;
 };
 
 const lastSales = [];
 
-for (let i = 0; i < 1000; i++) {
+for (let i = 0; i < 365; i++) {
   lastSales.push({
     size: getRandomSize(),
     price: getRandomPrice(),

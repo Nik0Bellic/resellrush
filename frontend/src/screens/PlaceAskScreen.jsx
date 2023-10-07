@@ -81,24 +81,16 @@ const PlaceAskScreen = () => {
 
   const countryArr = [
     {
-      label: 'USA',
-      value: 'US',
+      label: 'Georgia',
+      value: 'GE',
     },
     {
-      label: 'Canada',
-      value: 'CA',
+      label: 'Armenia',
+      value: 'AM',
     },
     {
-      label: 'UK',
-      value: 'UK',
-    },
-    {
-      label: 'Australia',
-      value: 'AU',
-    },
-    {
-      label: 'Mexico',
-      value: 'MX',
+      label: 'Turkey',
+      value: 'TR',
     },
   ];
 

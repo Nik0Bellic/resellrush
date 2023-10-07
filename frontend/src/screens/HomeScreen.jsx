@@ -29,8 +29,9 @@ const HomeScreen = () => {
               </div>
               <div className='mt-56 sm:mt-72 relative flex justify-between w-full border-b-2 border-black pb-2 text-xl lg:text-2xl font-medium'>
                 <div>/</div>
-                <div>Popular</div>
-                <div className='flex'>
+                <div>Catalog</div>
+                <div>/</div>
+                {/* <div className='flex'>
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     fill='none'
@@ -59,7 +60,7 @@ const HomeScreen = () => {
                       d='M12.75 15l3-3m0 0l-3-3m3 3h-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
                     />
                   </svg>
-                </div>
+                </div> */}
               </div>
             </>
           ) : (

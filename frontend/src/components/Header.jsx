@@ -62,7 +62,7 @@ const Header = () => {
             </Link>
             {/* Left Menu */}
             <div className='hidden lg:flex lg:text-md space-x-2 lgm:space-x-3 lgm:text-lg lgl:space-x-5'>
-              <Link
+              {/* <Link
                 to='/sneakers'
                 className='text-gray-400 px-2 py-1 xl:px-3 xl:py-2 hover:text-black
             outline-strongYellow rounded-full hover:outline hover:scale-110 duration-200'
@@ -75,7 +75,7 @@ const Header = () => {
             outline-strongYellow rounded-full hover:outline hover:scale-110 duration-200'
               >
                 Apparel
-              </Link>
+              </Link> */}
               <Link
                 to='/about'
                 className='text-gray-400 px-2 py-1 xl:px-3 xl:py-2 hover:text-black
@@ -84,7 +84,7 @@ const Header = () => {
                 About us
               </Link>
               <Link
-                href='/support'
+                to='/support'
                 className='text-gray-400 px-2 py-1 xl:px-3 xl:py-2 hover:text-black
             outline-strongYellow rounded-full hover:outline hover:scale-110 duration-200'
               >
@@ -273,7 +273,7 @@ const Header = () => {
               }`}
             >
               <div className='flex flex-col items-end space-y-7 text-black text-2xl'>
-                <Link
+                {/* <Link
                   to='/sneakers'
                   className='hover:px-3 hover:py-2
             outline-black rounded-full hover:bg-strongYellow hover:outline hover:scale-110 duration-200'
@@ -286,7 +286,7 @@ const Header = () => {
             outline-black rounded-full hover:bg-strongYellow hover:outline hover:scale-110 duration-200'
                 >
                   Apparel
-                </Link>
+                </Link> */}
                 <Link
                   to='/about'
                   className='hover:px-3 hover:py-2

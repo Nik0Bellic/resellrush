@@ -43,7 +43,10 @@ const DealScreen = () => {
   ) : (
     <>
       {deal.status && (
-        <Message variant='Success' text={`Mathed on ${deal.createdAt}`} />
+        <Message
+          variant='Success'
+          text={`Matched on ${new Date(deal.createdAt).toLocaleString()}`}
+        />
       )}
       <>
         <div className='flex justify-between my-8 lg:my-12'>

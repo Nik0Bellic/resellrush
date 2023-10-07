@@ -161,14 +161,14 @@ const SignInForm = () => {
             )}
           </button>
         </div>
-        <div className='flex'>
+        {/* <div className='flex'>
           <Link
             className='text-xs md:text-sm text-right w-full mt-1.5'
             to='/forgot-password'
           >
             Forgot your password?
           </Link>
-        </div>
+        </div> */}
         <button
           type='submit'
           className='mt-6 w-full border-2 border-black rounded-full py-2 hover:border-strongYellow hover:scale-105 active:bg-strongYellow active:border-black duration-100'
@@ -187,7 +187,7 @@ const SignInForm = () => {
             'Sign In'
           )}
         </button>
-        <div className='flex items-center my-4 opacity-25'>
+        {/* <div className='flex items-center my-4 opacity-25'>
           <div className='flex-1 border-t-2 border-black'></div>
           <span className='mx-2 text-lg md:text-xl -mt-1'>or</span>
           <div className='flex-1 border-t-2 border-black'></div>
@@ -265,7 +265,7 @@ const SignInForm = () => {
             </svg>
             Continue With Twitter
           </button>
-        </div>
+        </div> */}
       </form>
     </div>
   );
@@ -403,7 +403,7 @@ const SignUpForm = () => {
             'Sign Up'
           )}
         </button>
-        <div className='flex items-center my-4 opacity-25'>
+        {/* <div className='flex items-center my-4 opacity-25'>
           <div className='flex-1 border-t-2 border-black'></div>
           <span className='mx-2 text-lg md:text-xl -mt-1'>or</span>
           <div className='flex-1 border-t-2 border-black'></div>
@@ -481,7 +481,7 @@ const SignUpForm = () => {
             </svg>
             Continue With Twitter
           </button>
-        </div>
+        </div> */}
       </form>
     </div>
   );

@@ -16,6 +16,8 @@ import PrivateRoute from './components/PrivateRoute';
 import SellRoute from './components/SellRoute';
 import AdminRoute from './components/AdminRoute';
 import HomeScreen from './screens/HomeScreen';
+import AboutScreen from './screens/AboutScreen';
+import SupportScreen from './screens/SupportScreen';
 import ProductScreen from './screens/ProductScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ProfileBuyingScreen from './screens/ProfileBuyingScreen';
@@ -43,6 +45,8 @@ const router = createBrowserRouter(
         path='/search/:keyword/page/:pageNumber'
         element={<HomeScreen />}
       />
+      <Route path='/about' element={<AboutScreen />} />
+      <Route path='/support' element={<SupportScreen />} />
       <Route path='/:productId' element={<ProductScreen />} />
       <Route path='/buy/:productId' element={<BuyScreen />} />
       <Route path='/favorites' element={<FavoritesScreen />} />

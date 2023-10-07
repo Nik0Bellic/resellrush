@@ -58,16 +58,6 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Users'],
     }),
-    uploadPassportImage: builder.mutation({
-      query: (data) => ({
-        url: UPLOAD_URL,
-        method: 'POST',
-        body: data,
-        headers: {
-          'upload-type': 'passport',
-        },
-      }),
-    }),
     updateShippingInfo: builder.mutation({
       query: (data) => ({
         url: `${USERS_URL}/shipping`,
